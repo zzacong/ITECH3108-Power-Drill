@@ -19,22 +19,31 @@ $post = new Post($conn);
 
 $req_body = json_decode(file_get_contents("php://input"));
 
-if (isset($req_body->text)) {
-  $post->name = $req_body->name;
+if (!isset($req_body->text)) {
+  http_response_code(400);
+  echo json_encode(['message' => 'No post text given.']);
+  exit();
+}
+
+try {
+  $post->name = $req_body->name ?? '';
+  $post->reply_to = $req_body->replyTo ?? '';
   $post->text = $req_body->text;
 
-  $stmt = $post->create();
+  $stmt = isset($req_body->replyTo) ? $post->reply() : $post->create();
 
   if ($stmt->rowCount()) {
     http_response_code(201);
-    echo json_encode(['message' => 'Post created.']);
+    echo json_encode(['data' => true]);
   } else {
     http_response_code(500);
-    echo json_encode(['message' => 'Create post failed.']);
+    echo json_encode(['message' => $stmt->errorInfo()[2]]);
   }
-} else {
+} catch (Exception $e) {
   http_response_code(400);
-  echo json_encode(['message' => 'Insufficent body.']);
+  echo json_encode(['message' => $e->getMessage()]);
 }
+
+
 
 ?>

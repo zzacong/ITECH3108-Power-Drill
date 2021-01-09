@@ -34,6 +34,8 @@ class Post {
   }
 
   public function read_one() {
+    if (!$this->id) throw new Exception('Post id is empty');
+
     $query = "
       SELECT
         *
@@ -43,12 +45,18 @@ class Post {
         id = :id OR reply_to = :id
       ORDER BY
         post_date DESC
-    ";
+        ";
 
     return query_execute($this->conn, $query, [':id' => $this->id]);
   }
 
   public function create() {
+    $this->name = html(strip_tags($this->name));
+    $this->text = html(strip_tags($this->text));
+
+    if (!$this->name) $this->name = 'anonymous';
+    if (!$this->text) throw new Exception('Post text is empty');
+
     $query = "
       INSERT INTO $this->table
         (name, text)
@@ -56,10 +64,34 @@ class Post {
         (:name, :text)
     ";
 
+    $bindings = [
+      ':name' => $this->name,
+      ':text' => $this->text,
+    ];
+    return query_execute($this->conn, $query, $bindings);
+  }
+
+  public function reply() {
     $this->name = html(strip_tags($this->name));
     $this->text = html(strip_tags($this->text));
+    $this->reply_to = html(strip_tags($this->reply_to));
 
-    $bindings = [':name' => $this->name, ':text' => $this->text];
+    if (!$this->name) $this->name = 'anonymous';
+    if (!$this->text) throw new Exception('Post text is empty');
+    if (!$this->reply_to) throw new Exception('Post reply_to is empty');
+
+    $query = "
+      INSERT INTO $this->table
+        (name, text, reply_to)
+      VALUES
+        (:name, :text, :reply_to)
+    ";
+
+    $bindings = [
+      ':name' => $this->name,
+      ':text' => $this->text,
+      ':reply_to' => $this->reply_to,
+    ];
     return query_execute($this->conn, $query, $bindings);
   }
 
@@ -70,9 +102,7 @@ class Post {
         likes = likes + 1
       WHERE id = :id
     ";
-
-    $stmt = query_execute($this->conn, $query, [':id' => $this->id]);
-    return $stmt->rowCount() ? true : false;
+    return query_execute($this->conn, $query, [':id' => $this->id]);
   }
 
   public function unlike() {
@@ -81,16 +111,15 @@ class Post {
     ";
     $stmt = query_execute($this->conn, $query, [':id' => $this->id]);
     $res = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($res['likes'] > 0) {
 
+    if ($res['likes'] > 0) {
       $query = "
         UPDATE $this->table
         SET
           likes = likes - 1
         WHERE id = :id
       ";
-      $stmt = query_execute($this->conn, $query, [':id' => $this->id]);
-      return $stmt->rowCount() ? true : false;
+      return query_execute($this->conn, $query, [':id' => $this->id]);
     } else {
       return false;
     }

@@ -25,11 +25,17 @@ if (!isset($_GET['id'])) {
 
 $post->id = $_GET['id'];
 
-$stmt = $post->read_one();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-if ($rows) {
-  $posts = [];
+try {
+  $stmt = $post->read_one();
+  $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+  if (!$rows) {
+    http_response_code(404);
+    echo json_encode(['message' => "Post with id = $post->id not found."]);
+    exit();
+  }
+
+  $posts = [];
   foreach ($rows as $row) {
     extract($row);
     $single_post = [
@@ -45,10 +51,9 @@ if ($rows) {
 
   http_response_code(200);
   echo json_encode($posts);
-} else {
-  http_response_code(404);
-  echo json_encode(['message' => "No post with id = $post->id."]);
+} catch (Exception $e) {
+  http_response_code(400);
+  echo json_encode(['message' => $e->getMessage()]);
 }
-
 
 ?>

@@ -20,26 +20,27 @@ $post = new Post($conn);
 $stmt = $post->read();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($rows) {
-  $posts = [];
-  foreach ($rows as $row) {
-    extract($row);
-    $single_post = [
-      'id' => $id,
-      'name' => $name,
-      'text' => $text,
-      'likes' => $likes,
-      'postDate' => $post_date,
-      'replyTo' => $reply_to,
-    ];
-
-    $posts['data'][] = $single_post;
-  }
-  http_response_code(200);
-  echo json_encode($posts);
-} else {
+if (!$rows) {
   http_response_code(404);
   echo json_encode(['message' => 'No posts found.']);
 }
+
+$posts = [];
+foreach ($rows as $row) {
+  extract($row);
+  $single_post = [
+    'id' => $id,
+    'name' => $name,
+    'text' => $text,
+    'likes' => $likes,
+    'postDate' => $post_date,
+    'replyTo' => $reply_to,
+  ];
+
+  $posts['data'][] = $single_post;
+}
+
+http_response_code(200);
+echo json_encode($posts);
 
 ?>

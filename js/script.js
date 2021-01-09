@@ -1,118 +1,231 @@
-const root = document.querySelector('#root')
-
-// const xhttp = new XMLHttpRequest()
-
-// xhttp.onreadystatechange = function () {
-//   if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-//     const { data } = JSON.parse(this.responseText)
-
-//     data.forEach(post => {
-//       const card = document.createElement('div')
-//       card.className = 'card my-4 w-75'
-
-//       const ul = document.createElement('ul')
-//       ul.classList.add('list-group')
-//       for (const [key, value] of Object.entries(post)) {
-//         const li = document.createElement('li')
-//         li.classList.add('list-group-item')
-//         li.textContent = `${key}: ${value}`
-//         ul.appendChild(li)
-//       }
-
-//       const cardFooter = document.createElement('div')
-//       cardFooter.className = 'card-footer d-flex justify-content-end'
-
-//       const btnLike = document.createElement('button')
-//       btnLike.className = 'btn btn-small btn-primary '
-//       btnLike.textContent = 'Like'
-//       btnLike.addEventListener('click', () => {
-//         const xhttp = new XMLHttpRequest()
-//         xhttp.addEventListener('load', () => {
-//           console.log(xhttp.responseText)
-//         })
-//         xhttp.open('PUT', 'api/like.php', true)
-//         xhttp.setRequestHeader('Content-Type', 'application/json')
-//         xhttp.send(JSON.stringify({ id: post.id }))
-//       })
-
-//       const btnUnlike = document.createElement('button')
-//       btnUnlike.className = 'btn btn-small btn-danger mx-2'
-//       btnUnlike.textContent = 'Unlike'
-//       btnUnlike.addEventListener('click', () => {
-//         const xhttp = new XMLHttpRequest()
-//         xhttp.addEventListener('load', () => {
-//           console.log(xhttp.responseText)
-//         })
-//         xhttp.open('PUT', 'api/unlike.php', true)
-//         xhttp.setRequestHeader('Content-Type', 'application/json')
-//         xhttp.send(JSON.stringify({ id: post.id }))
-//       })
-
-//       cardFooter.appendChild(btnLike)
-//       cardFooter.appendChild(btnUnlike)
-//       card.appendChild(ul)
-//       card.appendChild(cardFooter)
-//       root.appendChild(card)
-//     })
-//   }
-// }
-// xhttp.open('GET', '/grapevine/api/getAll.php', true)
-// xhttp.send()
+const root = document.querySelector('#posts')
 
 async function main() {
   const res = await fetch('api/getAll.php')
   const { data } = await res.json()
   root.innerHTML = ''
-  data.forEach(post => {
+
+  // ? ----------
+  // ? ----------
+
+  const sortedData = data.sort((a, b) => {
+    const d1 = new Date(a.postDate)
+    const d2 = new Date(b.postDate)
+    return d2 - d1
+  })
+
+  // ? ----------
+  // ? ----------
+  for (const post of sortedData) {
     const card = document.createElement('div')
-    card.className = 'card my-4 w-75'
+    card.className = 'card my-4'
+
+    const cardPost = document.createElement('div')
+    cardPost.className = 'card-body'
+
+    for (const key in post) {
+      const p = document.createElement('p')
+      p.className = 'mb-1'
+      p.textContent = `${key}: ${post[key]}`
+      cardPost.appendChild(p)
+    }
+
+    // ? --------
+    // ? --------
+    // ? --------
+    // ? --------
+
+    const cardReply = document.createElement('div')
+    cardReply.className = 'card-body d-none reply'
+
+    const res = await fetch(`api/get.php?id=${post.id}`)
+    const { data } = await res.json()
 
     const ul = document.createElement('ul')
     ul.classList.add('list-group')
-    for (const [key, value] of Object.entries(post)) {
+
+    const sortedReply = data
+      .filter(post => post.replyTo !== null)
+      .sort((r1, r2) => {
+        const d1 = new Date(r1.postDate)
+        const d2 = new Date(r2.postDate)
+        return d2 - d1
+      })
+
+    for (reply of sortedReply) {
+      const { id } = reply
       const li = document.createElement('li')
       li.classList.add('list-group-item')
-      li.textContent = `${key}: ${value}`
+
+      for (const key in reply) {
+        const p = document.createElement('p')
+        p.className = 'mb-1'
+        p.textContent = `${key}: ${reply[key]}`
+        li.appendChild(p)
+      }
+      const btnLikee = document.createElement('button')
+      btnLikee.className = 'btn btn-sm btn-primary'
+      btnLikee.textContent = 'Like'
+      btnLikee.addEventListener('click', async () => {
+        await like(id)
+        main()
+      })
+
+      const btnUnlikee = document.createElement('button')
+      btnUnlikee.className = 'btn btn-sm btn-danger mx-2'
+      btnUnlikee.textContent = 'Unlike'
+      btnUnlikee.addEventListener('click', async () => {
+        await unlike(id)
+        main()
+      })
+
+      const div = document.createElement('div')
+      div.className = 'd-flex justify-content-end mt-2'
+
+      div.append(btnLikee, btnUnlikee)
+      li.appendChild(div)
       ul.appendChild(li)
     }
 
-    const cardFooter = document.createElement('div')
-    cardFooter.className = 'card-footer d-flex justify-content-end'
+    cardReply.appendChild(ul)
 
-    const btnLike = document.createElement('button')
-    btnLike.className = 'btn btn-small btn-primary '
-    btnLike.textContent = 'Like'
-    btnLike.addEventListener('click', async () => {
-      await fetch('api/like.php', {
-        method: 'PUT',
+    // ? --------
+    // ? --------
+    // ? --------
+
+    const replySec = document.createElement('div')
+    replySec.className = 'container mt-3'
+
+    replySec.innerHTML = `
+    <form class="row">
+      <div class="col-2 px-0">
+        <input type="text" name="name" placeholder="name" class="form-control">
+      </div>
+      <div class="col-9">
+        <input type="text" name="reply" placeholder="reply..." class="form-control">
+      </div>
+      <div class="col-1 px-0">
+        <button type="submit" class="btn btn-primary">Reply</button>
+      </div> 
+    </form>
+    `
+
+    cardReply.appendChild(replySec)
+
+    // ? --------
+    // ? --------
+    // ? --------
+
+    const replyForm = replySec.querySelector('form')
+    replyForm.addEventListener('submit', async e => {
+      e.preventDefault()
+      await fetch('api/create.php', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: post.id }),
+        body: JSON.stringify({
+          name: replyForm.name.value,
+          text: replyForm.reply.value,
+          replyTo: post.id,
+        }),
       })
+      main()
+    })
+
+    // ? --------
+    // ? --------
+    // ? --------
+
+    const cardFooter = document.createElement('div')
+    cardFooter.className = 'card-footer d-flex justify-content-between'
+
+    const btnLike = document.createElement('button')
+    btnLike.className = 'btn btn-sm btn-primary'
+    btnLike.textContent = 'Like'
+    btnLike.addEventListener('click', async () => {
+      await like(post.id)
       main()
     })
 
     const btnUnlike = document.createElement('button')
-    btnUnlike.className = 'btn btn-small btn-danger mx-2'
+    btnUnlike.className = 'btn btn-sm btn-danger mx-2'
     btnUnlike.textContent = 'Unlike'
     btnUnlike.addEventListener('click', async () => {
-      await fetch('api/unlike.php', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: post.id }),
-      })
+      await unlike(post.id)
       main()
     })
 
-    cardFooter.appendChild(btnLike)
-    cardFooter.appendChild(btnUnlike)
-    card.appendChild(ul)
-    card.appendChild(cardFooter)
+    const btnView = document.createElement('button')
+    btnView.className = 'btn btn-sm btn-success mx-2'
+    btnView.textContent = 'View'
+    btnView.addEventListener('click', () => {
+      btnView.textContent = btnView.textContent === 'View' ? 'Hide' : 'View'
+      card.querySelector('.reply').classList.toggle('d-none')
+    })
+
+    const btnGroup = document.createElement('div')
+    btnGroup.append(btnLike, btnUnlike)
+
+    cardFooter.append(btnGroup, btnView)
+    card.append(cardPost, cardReply, cardFooter)
     root.appendChild(card)
-  })
+  }
 }
 
 main()
+
+// ? ----------
+// ? ----------
+// ? ----------
+
+const btnCreate = document.querySelector('#btnCreate')
+const form = document.querySelector('#formCreate')
+
+btnCreate.addEventListener('click', () => {
+  form.classList.toggle('d-none')
+})
+
+form.addEventListener('submit', async e => {
+  e.preventDefault()
+  console.log(form.name.value)
+  console.log(form.text.value)
+
+  post = {
+    name: form['name'].value,
+    text: form['text'].value,
+  }
+  const res = await fetch('api/create.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(post),
+  })
+  const data = await res.json()
+  if (data.data) {
+    form.classList.toggle('d-none')
+    return main()
+  }
+  form.querySelector('#error').textContent = data.message
+})
+
+async function like(id) {
+  return fetch('api/like.php', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id }),
+  })
+}
+
+async function unlike(id) {
+  return fetch('api/unlike.php', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id }),
+  })
+}

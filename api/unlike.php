@@ -18,17 +18,20 @@ $post = new Post($conn);
 
 $req_body = json_decode(file_get_contents("php://input"));
 
-if (isset($req_body->id)) {
-  $post->id = $req_body->id;
-
-  if ($post->unlike()) {
-    echo json_encode(['message' => 'Unliked.']);
-  } else {
-    echo json_encode(['message' => 'Cannot unlike.']);
-  }
-} else {
+if (!isset($req_body->id)) {
   http_response_code(400);
   echo json_encode(['message' => 'No post id given.']);
+  exit();
 }
+
+$post->id = $req_body->id;
+$stmt = $post->unlike();
+
+if ($stmt->rowCount()) {
+  echo json_encode(['data' => true]);
+} else {
+  echo json_encode(['data' => false]);
+}
+
 
 ?>
