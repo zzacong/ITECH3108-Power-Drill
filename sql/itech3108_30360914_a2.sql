@@ -29,9 +29,9 @@ DROP TABLE IF EXISTS `PowerDrillPost`;
 -- Create Tables
 CREATE TABLE `PowerDrillPost` (
   `id` SERIAL,
-  `name` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) DEFAULT 'anonymous',
   `text` TEXT NOT NULL,
-  `post_date` TIMESTAMP DEFAULT NOW(),
+  `post_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `likes` INT DEFAULT 0,
   `reply_to` BIGINT UNSIGNED,
   PRIMARY KEY (`id`),
@@ -42,19 +42,41 @@ CREATE TABLE `PowerDrillPost` (
 -- 
 -- 
 -- INSERT ROW
- 
+
 -- 
 -- PowerDrillPost Table
-INSERT INTO `PowerDrillPost` (
-    `name`,
-    `text`,
-    `post_date`,
-    `likes`
-  )
+-- 
+-- TOP LEVEL POSTS
+-- Name
+INSERT INTO `PowerDrillPost` 
+  (`name`, `text`, `post_date`, `likes`)
 VALUES 
-  ('John Doe', 'my first cake', '2021-01-05 03:37:17', 2),
-  ('Patrick Howard', 'hello world', '2021-01-05 03:38:48', 3),
-  ('Gavin Jackson', 'why you should sleep', '2021-01-05 03:39:08', 10),
-  ('Ernnest Gray', 'i just bought facebook', '2021-01-05 03:39:34', 5);
+  ('John Doe', 'my first cake', '2021-01-05 20:00:00', 2),
+  ('Patrick Howard', 'hello world', '2021-01-06 13:00:00', 3),
+  ('Gavin Jackson', 'why you should sleep', '2021-01-06 15:00:00', 10),
+  ('Ernnest Gray', 'i just bought facebook', '2021-01-07 10:20:00', 5);
+
+-- Anonymous
+INSERT INTO `PowerDrillPost` 
+  (`text`, `post_date`)
+VALUES 
+  ('Some birds fly over the sky', '2021-01-07 18:25:00'),
+  ('Homebrew help you become greater devloper', '2021-01-08 09:45:00');
 
 
+-- 
+-- REPLIES
+-- Anonymous
+INSERT INTO `PowerDrillPost` 
+  (`text`, `post_date`, `reply_to`)
+VALUES
+  ('donut car bombibi', '2021-01-08 10:20:00', 1),
+  ('the superman return bombibi', '2021-01-08 10:25:00', 2),
+  ('batman begins lol bombibi', '2021-01-08 10:40:00', 2);
+
+-- Name
+INSERT INTO `PowerDrillPost`
+  (`name`, `text`, `post_date`, `reply_to`)
+VALUES
+  ('Farrington Durham', 'pizza hawaiian bombibi', '2021-01-08 13:20:00', 1),
+  ('Steve Iee', 'game of throne blah bombibi', '2021-01-08 14:45:00', 2);

@@ -17,38 +17,29 @@ require_once __DIR__ . '/../models/Post.class.php';
 $conn = (new Database())->get_connection();
 $post = new Post($conn);
 
-if (!isset($_GET['id'])) {
-  http_response_code(400);
-  echo json_encode(['mesasge' => 'Please specify a post id.']);
-  exit();
-}
-
-$post->id = $_GET['id'];
-
-$stmt = $post->read_one();
+$stmt = $post->read();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 if ($rows) {
   $posts = [];
-
   foreach ($rows as $row) {
     extract($row);
     $single_post = [
       'id' => $id,
       'name' => $name,
       'text' => $text,
-      'postDate' => $post_date,
       'likes' => $likes,
+      'postDate' => $post_date,
       'replyTo' => $reply_to,
     ];
+
     $posts['data'][] = $single_post;
   }
-
   http_response_code(200);
   echo json_encode($posts);
 } else {
   http_response_code(404);
-  echo json_encode(['message' => "No post with id = $post->id."]);
+  echo json_encode(['message' => 'No posts found.']);
 }
-
 
 ?>
