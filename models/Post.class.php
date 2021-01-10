@@ -19,7 +19,7 @@ class Post {
     $this->conn = $db;
   }
 
-  public function read() {
+  public function read_all() {
     $query = "
       SELECT
         *
@@ -33,7 +33,7 @@ class Post {
     return query_execute($this->conn, $query);
   }
 
-  public function read_one() {
+  public function read() {
     if (!$this->id) throw new Exception('Post id is empty');
 
     $query = "
@@ -44,7 +44,22 @@ class Post {
       WHERE
         id = :id OR reply_to = :id
       ORDER BY
-        post_date DESC
+        post_date ASC 
+        ";
+
+    return query_execute($this->conn, $query, [':id' => $this->id]);
+  }
+
+  public function read_one() {
+    if (!$this->id) throw new Exception('Post id is empty');
+
+    $query = "
+      SELECT
+        *
+      FROM
+        $this->table
+      WHERE
+        id = :id
         ";
 
     return query_execute($this->conn, $query, [':id' => $this->id]);

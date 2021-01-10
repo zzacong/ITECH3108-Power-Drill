@@ -13,7 +13,7 @@ class Database {
       $this->conn = new PDO(self::DB_DSN, self::DB_USER, self::DB_PASSWD);
     } catch (PDOException $e) {
       http_response_code(500);
-      echo json_encode(['message' => 'Connection failed: ' . $e->getMessage()]);
+      echo json_encode(['error' => 'Connection failed: ' . $e->getMessage()]);
       exit();
     }
   }

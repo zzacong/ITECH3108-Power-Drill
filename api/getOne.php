@@ -26,17 +26,8 @@ if (!isset($_GET['id'])) {
 $post->id = $_GET['id'];
 
 try {
-  $stmt = $post->read();
-  $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-  if (!$rows) {
-    http_response_code(404);
-    echo json_encode(['error' => "Posts of id = $post->id not found."]);
-    exit();
-  }
-
-  $posts = [];
-  foreach ($rows as $row) {
+  $stmt = $post->read_one();
+  if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     extract($row);
     $single_post = [
       'id' => $id,
@@ -46,11 +37,12 @@ try {
       'likes' => $likes,
       'replyTo' => $reply_to,
     ];
-    $posts['data'][] = $single_post;
+    http_response_code(200);
+    echo json_encode(['data' => $single_post]);
+  } else {
+    http_response_code(404);
+    echo json_encode(['error' => "Post with id = $post->id not found."]);
   }
-
-  http_response_code(200);
-  echo json_encode($posts);
 } catch (Exception $e) {
   http_response_code(400);
   echo json_encode(['error' => $e->getMessage()]);

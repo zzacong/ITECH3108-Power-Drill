@@ -71,8 +71,7 @@ INSERT INTO `PowerDrillPost`
   (`text`, `post_date`, `reply_to`)
 VALUES
   ('donut car bombibi', '2021-01-08 10:20:00', 1),
-  ('the superman return bombibi', '2021-01-08 10:25:00', 2),
-  ('batman begins lol bombibi', '2021-01-08 10:40:00', 2);
+  ('the superman return bombibi', '2021-01-08 10:25:00', 2);
 
 -- Name
 INSERT INTO `PowerDrillPost`

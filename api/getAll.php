@@ -17,15 +17,15 @@ require_once __DIR__ . '/../models/Post.class.php';
 $conn = (new Database())->get_connection();
 $post = new Post($conn);
 
-$stmt = $post->read();
+$stmt = $post->read_all();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$rows) {
   http_response_code(404);
-  echo json_encode(['message' => 'No posts found.']);
+  echo json_encode(['error' => 'No posts found.']);
 }
 
-$posts = [];
+$posts = ['data' => []];
 foreach ($rows as $row) {
   extract($row);
   $single_post = [

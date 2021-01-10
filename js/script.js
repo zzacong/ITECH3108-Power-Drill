@@ -1,200 +1,21 @@
-const root = document.querySelector('#posts')
+const createPostButton = document.querySelector('#createPostButton')
+const createPostForm = document.querySelector('#createPostForm')
 
-async function main() {
-  const res = await fetch('api/getAll.php')
-  const { data } = await res.json()
-  root.innerHTML = ''
-
-  // ? ----------
-  // ? ----------
-
-  const sortedData = data.sort((a, b) => {
-    const d1 = new Date(a.postDate)
-    const d2 = new Date(b.postDate)
-    return d2 - d1
-  })
-
-  // ? ----------
-  // ? ----------
-  for (const post of sortedData) {
-    const card = document.createElement('div')
-    card.className = 'card my-4'
-
-    const cardPost = document.createElement('div')
-    cardPost.className = 'card-body'
-
-    for (const key in post) {
-      const p = document.createElement('p')
-      p.className = 'mb-1'
-      p.textContent = `${key}: ${post[key]}`
-      cardPost.appendChild(p)
-    }
-
-    // ? --------
-    // ? --------
-    // ? --------
-    // ? --------
-
-    const cardReply = document.createElement('div')
-    cardReply.className = 'card-body d-none reply'
-
-    const res = await fetch(`api/get.php?id=${post.id}`)
-    const { data } = await res.json()
-
-    const ul = document.createElement('ul')
-    ul.classList.add('list-group')
-
-    const sortedReply = data
-      .filter(post => post.replyTo !== null)
-      .sort((r1, r2) => {
-        const d1 = new Date(r1.postDate)
-        const d2 = new Date(r2.postDate)
-        return d2 - d1
-      })
-
-    for (reply of sortedReply) {
-      const { id } = reply
-      const li = document.createElement('li')
-      li.classList.add('list-group-item')
-
-      for (const key in reply) {
-        const p = document.createElement('p')
-        p.className = 'mb-1'
-        p.textContent = `${key}: ${reply[key]}`
-        li.appendChild(p)
-      }
-      const btnLikee = document.createElement('button')
-      btnLikee.className = 'btn btn-sm btn-primary'
-      btnLikee.textContent = 'Like'
-      btnLikee.addEventListener('click', async () => {
-        await like(id)
-        main()
-      })
-
-      const btnUnlikee = document.createElement('button')
-      btnUnlikee.className = 'btn btn-sm btn-danger mx-2'
-      btnUnlikee.textContent = 'Unlike'
-      btnUnlikee.addEventListener('click', async () => {
-        await unlike(id)
-        main()
-      })
-
-      const div = document.createElement('div')
-      div.className = 'd-flex justify-content-end mt-2'
-
-      div.append(btnLikee, btnUnlikee)
-      li.appendChild(div)
-      ul.appendChild(li)
-    }
-
-    cardReply.appendChild(ul)
-
-    // ? --------
-    // ? --------
-    // ? --------
-
-    const replySec = document.createElement('div')
-    replySec.className = 'container mt-3'
-
-    replySec.innerHTML = `
-    <form class="row">
-      <div class="col-2 px-0">
-        <input type="text" name="name" placeholder="name" class="form-control">
-      </div>
-      <div class="col-9">
-        <input type="text" name="reply" placeholder="reply..." class="form-control">
-      </div>
-      <div class="col-1 px-0">
-        <button type="submit" class="btn btn-primary">Reply</button>
-      </div> 
-    </form>
-    `
-
-    cardReply.appendChild(replySec)
-
-    // ? --------
-    // ? --------
-    // ? --------
-
-    const replyForm = replySec.querySelector('form')
-    replyForm.addEventListener('submit', async e => {
-      e.preventDefault()
-      await fetch('api/create.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: replyForm.name.value,
-          text: replyForm.reply.value,
-          replyTo: post.id,
-        }),
-      })
-      main()
-    })
-
-    // ? --------
-    // ? --------
-    // ? --------
-
-    const cardFooter = document.createElement('div')
-    cardFooter.className = 'card-footer d-flex justify-content-between'
-
-    const btnLike = document.createElement('button')
-    btnLike.className = 'btn btn-sm btn-primary'
-    btnLike.textContent = 'Like'
-    btnLike.addEventListener('click', async () => {
-      await like(post.id)
-      main()
-    })
-
-    const btnUnlike = document.createElement('button')
-    btnUnlike.className = 'btn btn-sm btn-danger mx-2'
-    btnUnlike.textContent = 'Unlike'
-    btnUnlike.addEventListener('click', async () => {
-      await unlike(post.id)
-      main()
-    })
-
-    const btnView = document.createElement('button')
-    btnView.className = 'btn btn-sm btn-success mx-2'
-    btnView.textContent = 'View'
-    btnView.addEventListener('click', () => {
-      btnView.textContent = btnView.textContent === 'View' ? 'Hide' : 'View'
-      card.querySelector('.reply').classList.toggle('d-none')
-    })
-
-    const btnGroup = document.createElement('div')
-    btnGroup.append(btnLike, btnUnlike)
-
-    cardFooter.append(btnGroup, btnView)
-    card.append(cardPost, cardReply, cardFooter)
-    root.appendChild(card)
-  }
-}
-
-main()
-
-// ? ----------
-// ? ----------
-// ? ----------
-
-const btnCreate = document.querySelector('#btnCreate')
-const form = document.querySelector('#formCreate')
-
-btnCreate.addEventListener('click', () => {
-  form.classList.toggle('d-none')
+createPostButton.addEventListener('click', () => {
+  const text = createPostButton.textContent
+  createPostButton.classList.toggle('btn-outline-success')
+  createPostButton.classList.toggle('btn-outline-secondary')
+  createPostButton.textContent = text === 'Create Post' ? 'Hide' : 'Create Post'
+  createPostForm.classList.toggle('d-none')
 })
 
-form.addEventListener('submit', async e => {
+createPostForm.addEventListener('submit', async e => {
   e.preventDefault()
-  console.log(form.name.value)
-  console.log(form.text.value)
-
   post = {
-    name: form['name'].value,
-    text: form['text'].value,
+    name: createPostForm['name'].value,
+    text: createPostForm['text'].value,
   }
+
   const res = await fetch('api/create.php', {
     method: 'POST',
     headers: {
@@ -202,30 +23,145 @@ form.addEventListener('submit', async e => {
     },
     body: JSON.stringify(post),
   })
-  const data = await res.json()
-  if (data.data) {
-    form.classList.toggle('d-none')
-    return main()
-  }
-  form.querySelector('#error').textContent = data.message
+  const { error } = await res.json()
+  if (error) return (createPostForm.querySelector('#error').textContent = error)
+
+  createPostForm.classList.toggle('d-none')
+  location.reload()
 })
 
-async function like(id) {
-  return fetch('api/like.php', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id }),
+// ! ------
+// ? ------
+
+function main() {
+  const posts = document.querySelectorAll('.post')
+
+  posts.forEach(post => {
+    const id = post.getAttribute('id').split('-')[1]
+    const cardFooter = post.querySelector('.card-footer')
+    const likeButton = cardFooter.querySelector('.btn-like')
+    const unlikeButton = cardFooter.querySelector('.btn-unlike')
+    const viewButton = cardFooter.querySelector('.btn-view')
+    const replyForm = post.querySelector('.reply-form')
+    const likes = post.querySelector('.post-likes')
+    likeButton.addEventListener('click', async () => {
+      const { data } = await like(id)
+      if (data) likes.textContent = data.likes
+    })
+    unlikeButton.addEventListener('click', async () => {
+      const { data } = await unlike(id)
+      if (data) likes.textContent = data.likes
+    })
+    viewButton.addEventListener('click', async () => {
+      const replies = post.querySelector('.replies')
+      replies.classList.toggle('d-none')
+    })
+    replyForm.addEventListener('submit', async e => {
+      e.preventDefault()
+      const res = await fetch('api/create.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: replyForm.name.value,
+          text: replyForm.text.value,
+          replyTo: id,
+        }),
+      })
+      // const { data } = await res.json()
+      // addReply(post, data)
+    })
+  })
+
+  // ! ------
+  // ? ------
+
+  const replies = document.querySelectorAll('.reply')
+  replies.forEach(reply => {
+    const id = reply.getAttribute('id').split('-')[1]
+    const likeButton = reply.querySelector('.btn-like')
+    const unlikeButton = reply.querySelector('.btn-unlike')
+    const likes = reply.querySelector('.reply-likes')
+    likeButton.addEventListener('click', async () => {
+      const { data } = await like(id)
+      if (data) likes.textContent = data.likes
+    })
+    unlikeButton.addEventListener('click', async () => {
+      const { data } = await unlike(id)
+      if (data) likes.textContent = data.likes
+    })
   })
 }
 
-async function unlike(id) {
-  return fetch('api/unlike.php', {
+// ! ------
+// ? ------
+
+main()
+
+// ! ------
+// ? ------
+
+async function like(id) {
+  const res = await fetch('api/like.php', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ id }),
   })
+  return res.json()
+}
+
+async function unlike(id) {
+  const res = await fetch('api/unlike.php', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id }),
+  })
+  return res.json()
+}
+
+function addReply(post, data) {
+  const li = document.createElement('li')
+  li.className = 'list-group-item reply'
+  li.setAttribute('id', `reply-${data.id}`)
+  li.innerHTML = `
+          <table class="table table-sm">
+            <tbody>
+              <tr>
+                <th scope="row">ID</th>
+                <td>${data.id}</td>
+              </tr>
+              <tr>
+                <th scope="row">Name</th>
+                <td>${data.name}</td>
+              </tr>
+              <tr>
+                <th scope="row">Likes</th>
+                <td class="reply-likes">${data.likes}</td>
+              </tr>
+              <tr>
+                <th scope="row">Reply date</th>
+                <td>${data.date}</td>
+              </tr>
+              <tr>
+                <th scope="row">Reply to</th>
+                <td>${data.replyTo}</td>
+              </tr>
+              <tr>
+                <th scope="row">Text</th>
+                <td>${data.text}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-end my-2">
+            <button class="btn btn-sm btn-primary mx-2 btn-like">Like</button>
+            <button class="btn btn-sm btn-danger mx-2 btn-unlike">Unlike</button>
+          </div>
+      `
+  post.querySelector('.replies').querySelector('ul').appendChild(li)
+  return main()
 }
