@@ -53,15 +53,13 @@ INSERT INTO `PowerDrillPost`
 VALUES 
   ('John Doe', 'my first cake', '2021-01-05 20:00:00', 2),
   ('Patrick Howard', 'hello world', '2021-01-06 13:00:00', 3),
-  ('Gavin Jackson', 'why you should sleep', '2021-01-06 15:00:00', 10),
-  ('Ernnest Gray', 'i just bought facebook', '2021-01-07 10:20:00', 5);
+  ('Gavin Jackson', 'why you should sleep', '2021-01-06 15:00:00', 10);
 
 -- Anonymous
 INSERT INTO `PowerDrillPost` 
   (`text`, `post_date`)
 VALUES 
-  ('Some birds fly over the sky', '2021-01-07 18:25:00'),
-  ('Homebrew help you become greater devloper', '2021-01-08 09:45:00');
+  ('Some birds fly over the sky', '2021-01-07 18:25:00');
 
 
 -- 

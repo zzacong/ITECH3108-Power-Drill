@@ -86,7 +86,7 @@ function filter_reply($var) {
             $replyData = array_filter($replyData, 'filter_reply');
             ?>
             <h5 class="card-text">Replies</h5>
-            <ul class="list-group">
+            <ul class="list-group reply-list">
               <?php foreach ($replyData as $reply) :; ?>
                 <li id="reply-<?= html($reply->id) ?>" class="list-group-item reply">
                   <table class="table table-sm">

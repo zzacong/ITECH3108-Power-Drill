@@ -53,7 +53,7 @@ try {
     echo json_encode(['error' => $stmt->errorInfo()[2]]);
   }
 } catch (Exception $e) {
-  http_response_code(500);
+  http_response_code(400);
   echo json_encode(['error' => $e->getMessage()]);
 }
 
