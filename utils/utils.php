@@ -13,6 +13,7 @@ function query_execute($db, $query, $args = null) {
     }
   }
   $stmt->execute();
+  // print_r($stmt->errorInfo());
   return $stmt;
 }
 

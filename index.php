@@ -2,7 +2,7 @@
 
 require_once 'utils/utils.php';
 
-$raw = file_get_contents('http://localhost/powerdrill/api/getAll.php');
+$raw = file_get_contents('http://localhost/powerdrill/api/getAll.php?post_date=desc');
 $postData = json_decode($raw)->data;
 
 function filter_reply($var) {
@@ -10,11 +10,6 @@ function filter_reply($var) {
 }
 
 ?>
-<!-- <pre> -->
-<?php
-// print_r($postData);
-?>
-<!-- </pre> -->
 
 <!DOCTYPE html>
 <html lang="en">

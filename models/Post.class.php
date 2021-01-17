@@ -19,7 +19,7 @@ class Post {
     $this->conn = $db;
   }
 
-  public function read_all() {
+  public function read_all($sort_post_date = null, $sort_likes = null) {
     $query = "
       SELECT
         *
@@ -27,8 +27,16 @@ class Post {
         $this->table
       WHERE
         reply_to IS NULL
-      ORDER BY
-        post_date DESC";
+      ";
+
+    if ($sort_post_date && $sort_likes) {
+      $query = $query . " ORDER BY post_date $sort_post_date, likes $sort_likes";
+    } elseif ($sort_post_date) {
+      $query = $query . " ORDER BY post_date $sort_post_date";
+    } elseif ($sort_likes) {
+      $query = $query . " ORDER BY likes $sort_likes";
+    }
+
 
     return query_execute($this->conn, $query);
   }
