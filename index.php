@@ -2,7 +2,7 @@
 
 require_once 'utils/utils.php';
 
-$raw = file_get_contents('http://localhost/powerdrill/api/getAll.php?post_date=desc');
+$raw = file_get_contents('http://localhost/powerdrill/api/getTopLevel.php?post_date=desc');
 $postData = json_decode($raw)->data;
 
 function filter_reply($var) {
@@ -50,7 +50,7 @@ function filter_reply($var) {
 
     <section id="posts">
       <?php foreach ($postData as $post) :; ?>
-        <div id="post-<?= html($post->id) ?>" class="card my-4 post">
+        <div id="post-<?= html($post->id) ?>" class="card my-4 post top-post">
           <div class="card-body">
             <h4 class="card-title">Post #<?= html($post->id); ?></h4>
             <table class="table">
@@ -83,7 +83,7 @@ function filter_reply($var) {
             <h5 class="card-text">Replies</h5>
             <ul class="list-group reply-list">
               <?php foreach ($replyData as $reply) :; ?>
-                <li id="reply-<?= html($reply->id) ?>" class="list-group-item reply">
+                <li id="post-<?= html($reply->id) ?>" class="list-group-item post reply">
                   <table class="table table-sm">
                     <tbody>
                       <tr>
@@ -96,7 +96,7 @@ function filter_reply($var) {
                       </tr>
                       <tr>
                         <th scope="row">Likes</th>
-                        <td class="reply-likes"><?= html($reply->likes); ?></td>
+                        <td class="post-likes"><?= html($reply->likes); ?></td>
                       </tr>
                       <tr>
                         <th scope="row">Reply date</th>

@@ -1,7 +1,7 @@
 const root = document.querySelector('#posts')
 
 async function main() {
-  const res = await fetch('api/getAll.php')
+  const res = await fetch('api/getTopLevel.php')
   const { data } = await res.json()
   root.innerHTML = ''
 

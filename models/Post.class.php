@@ -19,7 +19,18 @@ class Post {
     $this->conn = $db;
   }
 
-  public function read_all($sort_post_date = null, $sort_likes = null) {
+  public function read_all() {
+    $query = "
+      SELECT
+        *
+      FROM
+        $this->table
+      ";
+
+    return query_execute($this->conn, $query);
+  }
+
+  public function read_top_level($sort_post_date = null, $sort_likes = null) {
     $query = "
       SELECT
         *

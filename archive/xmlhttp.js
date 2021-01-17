@@ -54,5 +54,5 @@
 //     })
 //   }
 // }
-// xhttp.open('GET', '/grapevine/api/getAll.php', true)
+// xhttp.open('GET', '/grapevine/api/getTopLevel.php', true)
 // xhttp.send()

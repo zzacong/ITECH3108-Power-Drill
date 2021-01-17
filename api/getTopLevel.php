@@ -17,7 +17,12 @@ require_once __DIR__ . '/../models/Post.class.php';
 $conn = (new Database())->get_connection();
 $post = new Post($conn);
 
-$stmt = $post->read_all();
+$sorting = ['ASC', 'DESC', 'asc', 'desc'];
+
+$sort_likes = isset($_GET['likes']) && in_array($_GET['likes'], $sorting) ? $_GET['likes'] : null;
+$sort_post_date = isset($_GET['post_date']) && in_array($_GET['post_date'], $sorting) ? $_GET['post_date'] : null;
+
+$stmt = $post->read_top_level($sort_post_date, $sort_likes);
 
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
