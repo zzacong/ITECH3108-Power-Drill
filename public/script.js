@@ -1,3 +1,5 @@
+const BASE_URL = 'http://localhost:8080/powerdrill/api/'
+
 const createPostButton = document.querySelector('#createPostButton')
 const createPostForm = document.querySelector('#createPostForm')
 
@@ -16,7 +18,7 @@ createPostForm.addEventListener('submit', async e => {
     text: createPostForm['text'].value,
   }
 
-  const res = await fetch('api/create.php', {
+  const res = await fetch(BASE_URL + 'create.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
