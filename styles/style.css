@@ -1,4 +1,8 @@
-.card {
-  min-width: 600px;
-  max-width: 900px;
+#topLevelPosts .post {
+  min-width: 340px;
+  max-width: 340px;
+}
+
+#replyList .reply {
+  min-width: 340px;
 }

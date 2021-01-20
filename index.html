@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/style.css">
   <script defer src="js/script.js"></script>
   <title>Power Drill Grapevine</title>
 </head>
@@ -38,8 +39,8 @@
 
     <section class="mb-4">
       <h2>Top-Level Posts</h2>
-      <div id="top-level-posts" class="row flex-nowrap overflow-auto">
-        <div id="postDemo" class="card mx-3 post" style="min-width: 350px; max-width: 350px;">
+      <div id="topLevelPosts" class="row flex-nowrap overflow-auto">
+        <div id="postDemo" class="card mx-3 post">
           <div class="card-body overflow-auto">
             <h4 class="card-title">Post #<span class="post-id">1</span></h4>
             <p class="h5 card-title">Posted by: <span class="post-name">John Doe</span></p>
@@ -66,8 +67,8 @@
 
     <section class="mb-4">
       <h3>Replies of Post #<span id="replyPostId">1</span></h3>
-      <ul class="list-group">
-        <li id="replyDemo" class="list-group-item post reply">
+      <ul id="replyList" class="list-group">
+        <li id="replyDemo" class="list-group-item post reply-item">
           <div class="row">
             <div class="col-12 col-md-3">
               <p class="mb-1">Post ID: <span class="reply-id">5</span></p>
@@ -98,17 +99,15 @@
       </ul>
 
       <div class="container mt-3">
-        <form class="reply-form">
-          <div class="form-row">
-            <div class="col-12 col-md-2 px-0">
+        <form id="replyForm">
+          <div class="inline-form d-flex flex-column align-items-stretch flex-md-row">
+            <div class="mb-2">
               <input type="text" name="name" placeholder="name" class="form-control">
             </div>
-            <div class="col-12 col-md-9 px-0 px-md-2 my-2 my-md-0">
+            <div class="flex-grow-1 mb-2 px-md-2">
               <input type="text" name="text" placeholder="reply..." class="form-control">
             </div>
-            <div class="col-12 col-md-1 px-0 d-flex">
-              <button type="submit" class="btn btn-success flex-fill">Reply</button>
-            </div>
+            <button type="submit" class="btn btn-success mb-2">Reply</button>
           </div>
         </form>
       </div>
