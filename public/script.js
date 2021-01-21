@@ -2,6 +2,15 @@ const BASE_URL = 'http://localhost:8080/powerdrill/api/'
 
 const createPostButton = document.querySelector('#createPostButton')
 const createPostForm = document.querySelector('#createPostForm')
+const main = document.querySelector('#main')
+const topLevelPostList = document.querySelector('#topLevelPostList')
+const postDetail = document.querySelector('#postDetail')
+const replyList = document.querySelector('#replyList')
+const replyForm = document.querySelector('#replyForm')
+
+let topLevelPostArr
+let currPost
+let currReplyArr
 
 createPostButton.addEventListener('click', () => {
   const text = createPostButton.textContent
@@ -14,8 +23,8 @@ createPostButton.addEventListener('click', () => {
 createPostForm.addEventListener('submit', async e => {
   e.preventDefault()
   const newPost = {
-    name: createPostForm['name'].value,
-    text: createPostForm['text'].value,
+    name: createPostForm.name.value,
+    text: createPostForm.text.value,
   }
   const { data, error } = await usePost('create.php', newPost)
   if (error) return (createPostForm.querySelector('#error').textContent = error)
@@ -26,19 +35,20 @@ createPostForm.addEventListener('submit', async e => {
 
   createPostForm.classList.toggle('d-none')
   createPostForm.reset()
-  addPostDOM(data)
+  addPostDOM(data, true)
+  topLevelPostArr.push(data)
 })
 
 // !! --- --- ---
 // ?? --- --- ---
 
-const topLevelPostList = document.querySelector('#topLevelPostList')
-
 async function init() {
-  const { data } = await useFetch('getTopLevel.php')
+  topLevelPostList.innerHTML = ''
+  const { data } = await useFetch('getTopLevel.php?post_date=desc')
   data.forEach(data => {
     addPostDOM(data)
   })
+  topLevelPostArr = data
 }
 
 init().catch(console.log)
@@ -77,69 +87,73 @@ async function unlike(id) {
   return usePut('unlike.php', { id })
 }
 
-function addPostDOM({ id, name, postDate, likes, text }) {
-  const postCard = document.querySelector('#postTemplate').cloneNode(true)
+function addPostDOM({ id, postDate, likes }, prepend = false) {
+  const postItem = document
+    .querySelector('#topLevelPostTemplate')
+    .cloneNode(true)
+  postItem.classList.remove('d-none')
+  postItem.classList.add('top-level-post')
+  postItem.removeAttribute('id')
+  postItem.querySelector('.post-id').textContent = id
+  postItem.querySelector('.post-date').textContent = postDate
+  postItem.querySelector('.post-likes').textContent = likes
+  postItem.addEventListener('click', () => {
+    document
+      .querySelectorAll('.top-level-post')
+      .forEach(post => post.classList.remove('active'))
+    postItem.classList.add('active')
+    main.classList.remove('d-none')
+    getPostDetails(id)
+  })
 
-  postCard.setAttribute('id', `post-${id}`)
-  postCard.querySelector('.post-id').textContent = id
-  postCard.querySelector('.post-name').textContent = name
-  postCard.querySelector('.post-date').textContent = postDate
-  postCard.querySelector('.post-text').textContent = text
-  const postLikes = postCard.querySelector('.post-likes')
+  if (prepend) topLevelPostList.prepend(postItem)
+  else topLevelPostList.appendChild(postItem)
+
+  return postItem
+}
+
+async function getPostDetails(id) {
+  const { post, replies } = await useFetch(`getOne.php?id=${id}`)
+  currPost = post
+  currReplyArr = replies
+  fillPostDetails(post)
+  replyList.innerHTML = ''
+  replies?.forEach(reply => addReplyDOM(reply))
+}
+
+function fillPostDetails({ id, name, postDate, likes, text }) {
+  postDetail.querySelector('.post-id').textContent = id
+  postDetail.querySelector('.post-name').textContent = name
+  postDetail.querySelector('.post-date').textContent = postDate
+  postDetail.querySelector('.post-text').textContent = text
+  const postLikes = postDetail.querySelector('.post-likes')
+  const btnLike = postDetail.querySelector('.btn-like')
+  const btnUnlike = postDetail.querySelector('.btn-unlike')
   postLikes.textContent = likes
-  postCard.classList.remove('d-none')
-  topLevelPostList.appendChild(postCard)
-
-  const btnLike = postCard.querySelector('.btn-like')
-  const btnUnlike = postCard.querySelector('.btn-unlike')
-  const btnView = postCard.querySelector('.btn-view')
-
-  btnLike.addEventListener('click', async () => {
+  btnLike.onclick = async () => {
     const { data } = await like(id)
     if (data) postLikes.textContent = data.likes
-  })
-  btnUnlike.addEventListener('click', async () => {
+  }
+  btnUnlike.onclick = async () => {
     const { data } = await unlike(id)
     if (data) postLikes.textContent = data.likes
-  })
-  btnView.addEventListener('click', () => {
-    document.querySelector('#replySection').classList.remove('d-none')
-    document.querySelector('#replyToId').textContent = id
-    document
-      .querySelectorAll('.reply-list')
-      .forEach(list => list.classList.add('d-none'))
-    document.querySelector(`#replyList-${id}`).classList.remove('d-none')
-  })
-
-  const replyList = document.querySelector('#replyListTemplate').cloneNode(true)
-  replyList.setAttribute('id', `replyList-${id}`)
-  document.querySelector('#replyLists').appendChild(replyList)
-  populateReplies(id, replyList)
-  return postCard
+  }
 }
 
-async function populateReplies(id, replyList) {
-  const { data } = await useFetch(`get.php?id=${id}`)
-  data
-    .filter(reply => reply.replyTo !== null)
-    .forEach(reply => addReplyDOM(replyList, reply))
-}
-
-function addReplyDOM(replyList, { id, name, postDate, replyTo, likes, text }) {
+function addReplyDOM({ id, name, postDate, replyTo, likes, text }) {
   const replyItem = document.querySelector('#replyItemTemplate').cloneNode(true)
   replyItem.classList.remove('d-none')
-  replyItem.querySelector('.reply-id').textContent = id
-  replyItem.querySelector('.reply-name').textContent = name
-  replyItem.querySelector('.reply-date').textContent = postDate
-  replyItem.querySelector('.reply-to').textContent = replyTo
-  replyItem.querySelector('.reply-text').textContent = text
-  const replyLikes = replyItem.querySelector('.reply-likes')
-  replyLikes.textContent = likes
-  replyList.appendChild(replyItem)
-
+  replyItem.classList.add('post')
+  replyItem.querySelector('.post-id').textContent = id
+  replyItem.querySelector('.post-name').textContent = name
+  replyItem.querySelector('.post-date').textContent = postDate
+  replyItem.querySelector('.post-replyto').textContent = replyTo
+  replyItem.querySelector('.post-text').textContent = text
+  const replyLikes = replyItem.querySelector('.post-likes')
   const btnLike = replyItem.querySelector('.btn-like')
   const btnUnlike = replyItem.querySelector('.btn-unlike')
-
+  replyLikes.textContent = likes
+  replyList.appendChild(replyItem)
   btnLike.addEventListener('click', async () => {
     const { data } = await like(id)
     if (data) replyLikes.textContent = data.likes
@@ -149,3 +163,59 @@ function addReplyDOM(replyList, { id, name, postDate, replyTo, likes, text }) {
     if (data) replyLikes.textContent = data.likes
   })
 }
+
+replyForm.addEventListener('submit', async e => {
+  e.preventDefault()
+  const { data, error } = await usePost('create.php', {
+    name: replyForm.name.value,
+    text: replyForm.text.value,
+    replyTo: currPost.id,
+  })
+  if (error) {
+    replyForm.text.classList.add('border-danger')
+    replyForm.text.placeholder = error
+  } else {
+    replyForm.text.classList.remove('border-danger')
+    replyForm.text.placeholder = 'reply...'
+    replyForm.reset()
+    addReplyDOM(data)
+    currReplyArr.push(data)
+  }
+})
+
+setInterval(async () => {
+  const { data } = await useFetch('getTopLevel.php?post_date=desc')
+  document.querySelectorAll('.top-level-post').forEach(postNode => {
+    const currId = postNode.querySelector('.post-id').textContent
+    const currLikes = postNode.querySelector('.post-likes')
+    const { likes } = data.find(p => p.id === currId)
+    if (likes && currLikes.textContent !== likes) currLikes.textContent = likes
+  })
+
+  if (topLevelPostArr.length !== data.length) {
+    const newPostArr = data.filter(
+      d => !topLevelPostArr.map(p => p.id).includes(d.id)
+    )
+    newPostArr.forEach(post => addPostDOM(post, true))
+    topLevelPostArr = data
+  }
+}, 5000)
+
+setInterval(async () => {
+  if (currPost) {
+    const { post, replies } = await useFetch(`getOne.php?id=${currPost.id}`)
+    document.querySelectorAll('.post').forEach(postNode => {
+      const currId = postNode.querySelector('.post-id').textContent
+      const currLikes = postNode.querySelector('.post-likes')
+      const { likes } = [post, ...replies].find(p => p.id === currId)
+      if (currLikes.textContent !== likes) currLikes.textContent = likes
+    })
+
+    if (currReplyArr.length !== replies.length) {
+      replies
+        .filter(p => !currReplyArr.map(p => p.id).includes(p.id))
+        .forEach(reply => addReplyDOM(reply))
+      currReplyArr = replies
+    }
+  }
+}, 5000)

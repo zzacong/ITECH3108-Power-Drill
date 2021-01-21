@@ -1,8 +1,6 @@
 
 <?php
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
 header('Content-Type: application/json; charset=UTF-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -35,7 +33,7 @@ try {
     exit();
   }
 
-  $posts = [];
+  $posts = ['replies' => []];
   foreach ($rows as $row) {
     extract($row);
     $single_post = [
@@ -46,7 +44,11 @@ try {
       'likes' => $likes,
       'replyTo' => $reply_to,
     ];
-    $posts['data'][] = $single_post;
+    if ($reply_to) {
+      $posts['replies'][] = $single_post;
+    } else {
+      $posts['post'] = $single_post;
+    }
   }
 
   http_response_code(200);
