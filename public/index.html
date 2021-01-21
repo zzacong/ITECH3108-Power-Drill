@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
-  <script defer src="script.js"></script>
+  <!-- <script defer src="script.js"></script> -->
   <title>Power Drill Grapevine</title>
 </head>
 
@@ -39,19 +39,16 @@
 
     <section class="mb-4">
       <h2>Top-Level Posts</h2>
-      <div id="topLevelPosts" class="row flex-nowrap overflow-auto">
-        <div id="postDemo" class="card mx-3 post">
+      <div id="topLevelPostList" class="row flex-nowrap pb-4">
+        <div id="postTemplate" class="card mx-3 d-none post">
           <div class="card-body overflow-auto">
-            <h4 class="card-title">Post #<span class="post-id">1</span></h4>
-            <p class="h5 card-title">Posted by: <span class="post-name">John Doe</span></p>
-            <p class="card-text text-muted font-italic">Posted at: <span class="post-date">2020-01-10 11:23:43</span>
+            <h4 class="card-title">Post #<span class="post-id"></span></h4>
+            <p class="h5 card-title">Posted by: <span class="post-name"></span></p>
+            <p class="card-text text-muted font-italic">Posted at: <span class="post-date"></span>
             </p>
-            <p class="card-text text-info font-weight-bold">Likes: <span class="post-likes">20</span></p>
+            <p class="card-text text-info font-weight-bold">Likes: <span class="post-likes"></span></p>
             <p class="card-text font-weight-bold mb-1">Post text:</p>
-            <p class="card-text post-text">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas nesciunt animi est
-              necessitatibus minus culpa praesentium voluptas dolore neque quidem!
-            </p>
+            <p class="card-text post-text"></p>
           </div>
           <div class="card-footer d-flex justify-content-between">
             <div class="btn-group">
@@ -65,38 +62,38 @@
       <hr>
     </section>
 
-    <section class="mb-4">
-      <h3>Replies of Post #<span id="replyPostId">1</span></h3>
-      <ul id="replyList" class="list-group">
-        <li id="replyDemo" class="list-group-item post reply-item">
-          <div class="row">
-            <div class="col-12 col-md-3">
-              <p class="mb-1">Post ID: <span class="reply-id">5</span></p>
-            </div>
-            <div class="col-12 col-md">
-              <p class="mb-1">Posted by: <span class="reply-name">John Smith</span></p>
-            </div>
-            <div class="col-12 col-md-5">
-              <p class="text-muted font-italic text-md-right mb-3 mb-md-1">Posted at:
-                <span class="reply-date">2021-10-23 10:05:30</span>
-              </p>
-            </div>
+    <section id="replySection" class="d-none mb-4">
+      <h3>Replies of Post #<span id="replyToId"></span></h3>
+      <div id="replyLists"></div>
+      <ul id="replyListTemplate" class="list-group d-none reply-list"></ul>
+      <li id="replyItemTemplate" class="list-group-item d-none post">
+        <div class="row mb-2">
+          <div class="col-12 col-sm-4 col-lg-1">
+            <p class="mb-1">ID: <span class="reply-id"></span></p>
           </div>
-          <p class="font-weight-bold mb-1">Post text:</p>
-          <p class="repy-text">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit officiis totam laborum non laboriosam
-            natus ipsam rem! Vel, placeat odio!
-          </p>
-          <div class="d-flex justify-content-between mt-2">
-            <span class="text-info font-weight-bold">Likes: <span class="post-likes">30</span>
-            </span>
-            <div class="btn-group">
-              <button class="btn btn-sm btn-info btn-like">Like</button>
-              <button class="btn btn-sm btn-danger btn-unlike">Unlike</button>
-            </div>
+          <div class="col-12 col-sm-8 col-lg-4">
+            <p class="text-sm-right text-lg-left mb-1">Posted by: <span class="reply-name"></span></p>
           </div>
-        </li>
-      </ul>
+          <div class="col-12 col-sm-4 col-lg">
+            <p class="text-muted mb-1">Reply to: Post #<span class="reply-to"></span></p>
+          </div>
+          <div class="col-12 col-sm-8 col-lg">
+            <p class="text-muted font-italic text-sm-right mb-1">Posted at:
+              <span class="reply-date"></span>
+            </p>
+          </div>
+        </div>
+        <p class="font-weight-bold mb-1">Post text:</p>
+        <p class="reply-text"></p>
+        <div class="d-flex justify-content-between mt-2">
+          <span class="text-info font-weight-bold">Likes: <span class="reply-likes"></span>
+          </span>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-info btn-like">Like</button>
+            <button class="btn btn-sm btn-danger btn-unlike">Unlike</button>
+          </div>
+        </div>
+      </li>
 
       <div class="container mt-3">
         <form id="replyForm">
