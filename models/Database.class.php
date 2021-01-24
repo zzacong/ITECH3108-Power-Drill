@@ -8,9 +8,11 @@ class Database {
   private const DB_PASSWD = 'password';
   private $conn = null;
 
+
   public function __construct() {
     try {
       $this->conn = new PDO(self::DB_DSN, self::DB_USER, self::DB_PASSWD);
+      $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
       http_response_code(500);
       header('Content-Type: application/json; charset=utf-8');
@@ -20,24 +22,10 @@ class Database {
     }
   }
 
-  function getConnection() {
+
+  function getConnection(): PDO {
     return $this->conn;
   }
-
-  // function query_execute($query, $bindings = null) {
-  //   echo json_encode($query) . PHP_EOL;
-  //   // echo json_encode($bindings) . PHP_EOL;
-  //   $stmt = $this->conn->prepare($query);
-  //   // echo json_encode($stmt) . PHP_EOL;
-  //   if ($bindings) {
-  //     foreach ($bindings as $param => $value) {
-  //       $stmt->bindValue($param, $value);
-  //     }
-  //   }
-  //   $stmt->execute();
-  //   // echo json_encode($stmt->errorInfo()) . PHP_EOL;
-  //   return $stmt;
-  // }
 }
 
 ?>

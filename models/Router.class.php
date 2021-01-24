@@ -2,6 +2,7 @@
 <?php
 
 class Router {
+
   private $handlers = array();
 
   function get($regex, $func) {
@@ -21,7 +22,6 @@ class Router {
   }
 
   function route($url) {
-    // $params = null;
     foreach ($this->handlers as $handler) {
       if ($handler->handle($url)) {
         exit();

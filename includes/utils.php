@@ -5,26 +5,53 @@ function camel_to_snake($str) {
   return strtolower(preg_replace('/([A-Z])/', '_$1', $str));
 }
 
-function fail_response($res) {
-  http_response_code(404);
-  echo json_encode($res);
-  exit();
-}
-
-function success_response($res) {
+function success_ok($res) {
   http_response_code(200);
   echo json_encode($res);
   exit();
 }
 
-function extract_query_params(Post $post_mapper, $and = false) {
+function not_found($res) {
+  http_response_code(404);
+  echo json_encode($res);
+  exit();
+}
+
+function bad_request($res) {
+  http_response_code(400);
+  echo json_encode($res);
+  exit();
+}
+
+function server_error($res) {
+  http_response_code(500);
+  echo json_encode($res);
+  exit();
+}
+
+function handle_error(Exception $e) {
+  $msg = [
+    'error' => $e->getMessage(),
+    'code' => $e->getCode(),
+    'trace' => $e->getTraceAsString()
+  ];
+
+  if ($e->getCode() === '42000')
+    // SQL Syntax Error
+    server_error($msg);
+  else
+    // 400 Bad Request
+    bad_request($msg);
+}
+
+function extract_query_params($get, PostMapper $post_mapper, $and = false) {
   $valid_query_params = ['id', 'name', 'likes', 'replyTo', 'sort'];
 
-  if (array_diff(array_keys($_GET), $valid_query_params))
+  if (array_diff(array_keys($get), $valid_query_params))
     throw new Exception("Invalid parameter.");
 
   $index = 0;
-  foreach ($_GET as $key => $condition) {
+  foreach ($get as $key => $condition) {
     $key = camel_to_snake($key);
     if ($key === 'sort') continue;
     $and = $and || $index !== 0;
@@ -36,9 +63,9 @@ function extract_query_params(Post $post_mapper, $and = false) {
   }
 }
 
-function sortable(Post $post_mapper) {
-  if (isset($_GET['sort'])) {
-    $params = explode(',', $_GET['sort']);
+function sortable($get, PostMapper $post_mapper) {
+  if (isset($get['sort'])) {
+    $params = explode(',', $get['sort']);
     foreach ($params as $i => $value) {
       $arr = explode(':', $value);
       $key = camel_to_snake($arr[0]);
