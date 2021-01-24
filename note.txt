@@ -1,7 +1,11 @@
 GET   /api/posts
 
 GET   /api/posts?replyTo=null
-GET   /api/posts?sort=posted_at:asc,likes:desc
+GET   /api/posts?name=John%20Smith
+GET   /api/posts?likes=20
+GET   /api/posts?sort=postDate:asc,likes:desc
+
+GET   /api/posts/toplevel
 
 GET   /api/posts/:id
 GET   /api/posts?id=1
