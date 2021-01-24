@@ -13,7 +13,7 @@ require_once __DIR__ . '/../config/Database.class.php';
 require_once __DIR__ . '/../models/Post.class.php';
 
 
-$conn = (new Database())->get_connection();
+$conn = (new Database())->getConnection();
 $post = new Post($conn);
 
 $req_body = json_decode(file_get_contents("php://input"));

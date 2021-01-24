@@ -20,24 +20,24 @@ class Database {
     }
   }
 
-  function get_connection() {
+  function getConnection() {
     return $this->conn;
   }
 
-  function query_execute($query, $bindings = null) {
-    echo json_encode($query) . PHP_EOL;
-    // echo json_encode($bindings) . PHP_EOL;
-    $stmt = $this->conn->prepare($query);
-    // echo json_encode($stmt) . PHP_EOL;
-    if ($bindings) {
-      foreach ($bindings as $param => $value) {
-        $stmt->bindValue($param, $value);
-      }
-    }
-    $stmt->execute();
-    // echo json_encode($stmt->errorInfo()) . PHP_EOL;
-    return $stmt;
-  }
+  // function query_execute($query, $bindings = null) {
+  //   echo json_encode($query) . PHP_EOL;
+  //   // echo json_encode($bindings) . PHP_EOL;
+  //   $stmt = $this->conn->prepare($query);
+  //   // echo json_encode($stmt) . PHP_EOL;
+  //   if ($bindings) {
+  //     foreach ($bindings as $param => $value) {
+  //       $stmt->bindValue($param, $value);
+  //     }
+  //   }
+  //   $stmt->execute();
+  //   // echo json_encode($stmt->errorInfo()) . PHP_EOL;
+  //   return $stmt;
+  // }
 }
 
 ?>

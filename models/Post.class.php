@@ -6,19 +6,197 @@ class Post {
   private $conn;
   private $table = "PowerDrillPost";
 
-  public $id;
-  public $name;
-  public $text;
-  public $likes;
-  public $post_date;
-  public $reply_to;
+  private const FIELDS = ['id', 'name', 'text', 'likes', 'post_date', 'reply_to'];
+  private $query = "";
+  private $bindings = array();
+  private $stmt;
 
-  function __construct($db) {
+
+  function __construct(PDO $db) {
     $this->conn = $db;
   }
 
-  function select($args) {
+
+  function valid_key($key) {
+    return in_array($key, self::FIELDS);
   }
+
+
+  function execute() {
+    $this->stmt = $this->conn->prepare($this->query);
+    echo json_encode($this->query) . PHP_EOL;
+    if ($this->bindings) {
+      echo json_encode(implode(', ', $this->bindings)) . PHP_EOL;
+      foreach ($this->bindings as $i => $value) {
+        $this->stmt->bindValue($i + 1, $value);
+      }
+    }
+    $this->stmt->execute();
+    // echo json_encode($this->stmt->errorInfo()) . PHP_EOL;
+    return $this->stmt;
+  }
+
+
+  function selectAll() {
+    $this->query = "
+        SELECT * FROM $this->table
+      ";
+    return $this;
+  }
+
+
+  function select(...$args) {
+    if (!array_diff($args, self::FIELDS)) {
+      $fields = implode(', ', $args);
+      $this->query = "
+        SELECT $fields
+        FROM $this->table
+      ";
+      return $this;
+    } else {
+      throw new Exception("Error Processing Request");
+    }
+  }
+
+
+  function where($key, $value, $and = false) {
+    if ($this->valid_key($key)) {
+      $this->query .= $and ? " AND " : " WHERE ";
+      $this->bindings[] = $value;
+      $this->query .= "
+          ($key = ?)
+        ";
+      return $this;
+    } else {
+      throw new Exception("Error Processing Request");
+    }
+  }
+
+  function whereNull($key, $and = false) {
+    if ($this->valid_key($key)) {
+      $this->query .= $and ? " AND " : " WHERE ";
+      $this->query .= "
+        ($key IS NULL)
+      ";
+      return $this;
+    } else {
+      throw new Exception("Error Processing Request");
+    }
+  }
+
+  function orderBy($key, $order, $and = false) {
+    if ($this->valid_key($key) && in_array(strtolower($order), ['asc', 'desc'])) {
+      $this->query .= $and ? ", " : " ORDER BY ";
+      $this->query .= "
+        $key $order
+      ";
+      return $this;
+    } else {
+      throw new Exception("Error Processing Request");
+    }
+  }
+
+
+  function insert($args) {
+    $keys = array_keys($args);
+    $values = array_values($args);
+    if (!array_diff($keys, self::FIELDS)) {
+      $this->bindings = $values;
+      $keys = implode(', ', $keys);
+      $values = str_repeat('?, ', count($args));
+      $values = rtrim($values, ', ');
+    } else {
+      throw new Exception("Error Processing Request");
+    }
+    $this->query = "
+      INSERT INTO $this->table
+        ($keys)
+      VALUES
+        ($values)
+    ";
+
+    return $this;
+  }
+
+
+  function makePost($post) {
+    extract($post);
+    $single_post  = [
+      'id' => $id,
+      'name' => $name,
+      'text' => $text,
+      'likes' => $likes,
+      'postDate' => $post_date,
+      'replyTo' => $reply_to,
+      'links' => [
+        'post' => $this->makePostUrl($id),
+        'like' => $this->makeLikeUrl($id),
+      ],
+      'replies' => [],
+    ];
+
+    // Get a list of replies for the post
+    $post_mapper = new Post($this->conn);
+    $stmt = $post_mapper->selectAll()->where('reply_to', $id)->execute();
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $single_reply = $this->makeReply($row);
+      $single_post['replies'][] = $single_reply;
+    }
+
+    return $single_post;
+  }
+
+  function makeReply($post) {
+    extract($post);
+    return [
+      'id' => $id,
+      'name' => $name,
+      'text' => $text,
+      'likes' => $likes,
+      'postDate' => $post_date,
+      'replyTo' => $reply_to,
+      'links' => [
+        'post' => $this->makePostUrl($id),
+        'like' => $this->makeLikeUrl($id),
+      ],
+    ];
+  }
+
+  function makeUrl() {
+    $base_url = '/api/posts/';
+    return $base_url;
+  }
+
+  function makePostUrl($id) {
+    return $this->makeUrl() . $id;
+  }
+
+  function makeLikeUrl($id) {
+    return $this->makeUrl() . $id . '/like';
+  }
+
+
+
+  // function whereIn($key, $args) {
+  //   if ($this->valid_key($key)) {
+  //     $range = '';
+  //     foreach ($args as $arg) {
+  //       $range .= '?, ';
+  //       $this->bindings[] = $arg;
+  //     }
+  //     $this->query .= "
+  //       WHERE $key IN ($range)
+  //     ";
+  //     return $this;
+  //   } else {
+  //     throw new Exception("Error Processing Request");
+  //   }
+  // }
+
+
+
+
 
   // public function read_all() {
   //   $query = "
