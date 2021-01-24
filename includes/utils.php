@@ -11,9 +11,12 @@ function success_ok($res) {
   exit();
 }
 
-function not_found($res) {
+function not_found($res, $force_object = false) {
   http_response_code(404);
-  echo json_encode($res);
+  if ($force_object)
+    echo json_encode($res, JSON_FORCE_OBJECT);
+  else
+    echo json_encode($res);
   exit();
 }
 

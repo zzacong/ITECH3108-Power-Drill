@@ -1,6 +1,5 @@
-// const BASE_URL = 'http://localhost:8080/powerdrill/api/'
 // const BASE_URL = window.location.origin + '/powerdrill/api/'
-const BASE_URL = '/powerdrill/api/'
+const BASE_URL = '/powerdrill/api'
 
 const createPostButton = document.querySelector('#createPostButton')
 const createPostForm = document.querySelector('#createPostForm')
@@ -28,7 +27,7 @@ createPostForm.addEventListener('submit', async e => {
     name: createPostForm.name.value,
     text: createPostForm.text.value,
   }
-  const { data, error } = await usePost('create.php', newPost)
+  const { error, ...data } = await usePost('/posts', newPost)
   if (error) return (createPostForm.querySelector('#error').textContent = error)
 
   createPostButton.classList.toggle('btn-outline-success')
@@ -46,7 +45,7 @@ createPostForm.addEventListener('submit', async e => {
 
 async function init() {
   topLevelPostList.innerHTML = ''
-  const { data } = await useFetch('getTopLevel.php?post_date=desc')
+  const data = await useFetch('/posts/toplevel?sort=postDate:desc')
   data.forEach(data => {
     addPostDOM(data)
   })
@@ -82,11 +81,11 @@ async function usePut(endpoint, data) {
 }
 
 async function like(id) {
-  return usePut('like.php', { id })
+  return usePut(`/posts/${id}/like`)
 }
 
 async function unlike(id) {
-  return usePut('unlike.php', { id })
+  return usePut(`/posts/${id}/unlike`)
 }
 
 function addPostDOM({ id, postDate, likes }, prepend = false) {
@@ -106,6 +105,9 @@ function addPostDOM({ id, postDate, likes }, prepend = false) {
     postItem.classList.add('active')
     main.classList.remove('d-none')
     getPostDetails(id)
+    replyForm.text.classList.remove('border-danger')
+    replyForm.text.placeholder = 'reply...'
+    replyForm.reset()
   })
 
   if (prepend) topLevelPostList.prepend(postItem)
@@ -115,7 +117,7 @@ function addPostDOM({ id, postDate, likes }, prepend = false) {
 }
 
 async function getPostDetails(id) {
-  const { post, replies } = await useFetch(`getOne.php?id=${id}`)
+  const { replies, ...post } = await useFetch(`/posts/${id}`)
   currPost = post
   currReplyArr = replies
   fillPostDetails(post)
@@ -133,11 +135,11 @@ function fillPostDetails({ id, name, postDate, likes, text }) {
   const btnUnlike = postDetail.querySelector('.btn-unlike')
   postLikes.textContent = likes
   btnLike.onclick = async () => {
-    const { data } = await like(id)
+    const data = await like(id)
     if (data) postLikes.textContent = data.likes
   }
   btnUnlike.onclick = async () => {
-    const { data } = await unlike(id)
+    const data = await unlike(id)
     if (data) postLikes.textContent = data.likes
   }
 }
@@ -157,18 +159,18 @@ function addReplyDOM({ id, name, postDate, replyTo, likes, text }) {
   replyLikes.textContent = likes
   replyList.appendChild(replyItem)
   btnLike.addEventListener('click', async () => {
-    const { data } = await like(id)
+    const data = await like(id)
     if (data) replyLikes.textContent = data.likes
   })
   btnUnlike.addEventListener('click', async () => {
-    const { data } = await unlike(id)
+    const data = await unlike(id)
     if (data) replyLikes.textContent = data.likes
   })
 }
 
 replyForm.addEventListener('submit', async e => {
   e.preventDefault()
-  const { data, error } = await usePost('create.php', {
+  const { error, ...data } = await usePost('/posts', {
     name: replyForm.name.value,
     text: replyForm.text.value,
     replyTo: currPost.id,
@@ -186,7 +188,7 @@ replyForm.addEventListener('submit', async e => {
 })
 
 setInterval(async () => {
-  const { data } = await useFetch('getTopLevel.php?post_date=desc')
+  const data = await useFetch('/posts/toplevel?sort=postDate:desc')
   document.querySelectorAll('.top-level-post').forEach(postNode => {
     const currId = postNode.querySelector('.post-id').textContent
     const currLikes = postNode.querySelector('.post-likes')
@@ -205,7 +207,7 @@ setInterval(async () => {
 
 setInterval(async () => {
   if (currPost) {
-    const { post, replies } = await useFetch(`getOne.php?id=${currPost.id}`)
+    const { replies, ...post } = await useFetch(`/posts/${currPost.id}`)
     document.querySelectorAll('.post').forEach(postNode => {
       const currId = postNode.querySelector('.post-id').textContent
       const currLikes = postNode.querySelector('.post-likes')

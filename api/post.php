@@ -36,7 +36,7 @@ $router->get('#^/(\d+)/?$#', function ($params) {
       success_ok($post->__serialize());
     }
     // No post with this ID
-    not_found([]);
+    not_found(null);
   } catch (Exception $e) {
     handle_error($e);
   }
@@ -137,7 +137,7 @@ $router->post('#^/$#', function () {
       $post = new Post($row, $post_mapper);
       success_ok($post->__serialize());
     }
-    not_found([]);
+    not_found([], true);
   } catch (Exception $e) {
     handle_error($e);
   }
@@ -174,7 +174,7 @@ $router->put('#^/(\d+)/like/?$#', function ($params) {
       $post = new Post($row, $post_mapper);
       success_ok($post->__serialize());
     }
-    not_found([]);
+    not_found(null);
   } catch (Exception $e) {
     handle_error($e);
   }
@@ -211,7 +211,7 @@ $router->put('#^/(\d+)/unlike/?$#', function ($params) {
       $post = new Post($row, $post_mapper);
       success_ok($post->__serialize());
     }
-    not_found([]);
+    not_found(null);
   } catch (Exception $e) {
     handle_error($e);
   }
@@ -221,7 +221,7 @@ $router->put('#^/(\d+)/unlike/?$#', function ($params) {
 // ! Try routing
 $router->route($_SERVER['PATH_INFO']);
 // No route matches, route is invalid
-not_found([]);
+not_found([], true);
 
 
 ?>
