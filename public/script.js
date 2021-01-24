@@ -1,4 +1,6 @@
-const BASE_URL = 'http://localhost:8080/powerdrill/api/'
+// const BASE_URL = 'http://localhost:8080/powerdrill/api/'
+// const BASE_URL = window.location.origin + '/powerdrill/api/'
+const BASE_URL = '/powerdrill/api/'
 
 const createPostButton = document.querySelector('#createPostButton')
 const createPostForm = document.querySelector('#createPostForm')

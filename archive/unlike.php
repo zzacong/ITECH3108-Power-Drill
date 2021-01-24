@@ -1,6 +1,7 @@
 
 <?php
 
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=UTF-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
@@ -23,9 +24,7 @@ if (!isset($req_body->id)) {
 }
 
 $post->id = $req_body->id;
-$stmt = $post->like();
-
-if ($stmt->rowCount()) {
+if ($post->unlike()) {
   $stmt = $post->read_one();
   if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     extract($row);
@@ -42,7 +41,8 @@ if ($stmt->rowCount()) {
     exit();
   }
 }
-http_response_code(500);
-echo json_encode(['error' => 'like failed']);
+
+http_response_code(200);
+echo json_encode(['data' => false]);
 
 ?>

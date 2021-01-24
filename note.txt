@@ -1,0 +1,12 @@
+GET   /api/posts
+
+GET   /api/posts?replyTo=null
+GET   /api/posts?sort=posted_at:asc,likes:desc
+
+GET   /api/posts/:id
+GET   /api/posts?id=1
+
+POST  /api/posts
+
+PUT  /api/posts/:id/like
+PUT  /api/posts/:id/unlike
