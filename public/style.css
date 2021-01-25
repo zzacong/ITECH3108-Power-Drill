@@ -1,3 +1,7 @@
 .top-level-post {
   min-width: 190px;
 }
+
+main {
+  max-width: 1000px;
+}

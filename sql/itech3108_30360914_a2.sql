@@ -53,7 +53,7 @@ INSERT INTO `PowerDrillPost`
 VALUES 
   ('John Doe', 'my first cake', '2021-01-05 20:00:00', 2),
   ('Patrick Howard', 'hello world', '2021-01-06 13:00:00', 3),
-  ('Gavin Jackson', 'why you should sleep', '2021-01-06 15:00:00', 10);
+  ('user30360914', 'why you should sleep', '2021-01-06 15:00:00', 10);
 
 -- Anonymous
 INSERT INTO `PowerDrillPost` 
@@ -76,4 +76,4 @@ INSERT INTO `PowerDrillPost`
   (`name`, `text`, `post_date`, `reply_to`)
 VALUES
   ('Farrington Durham', 'pizza hawaiian bombibi', '2021-01-08 13:20:00', 1),
-  ('Steve Iee', 'game of throne blah bombibi', '2021-01-08 14:45:00', 2);
+  ('user30360914', 'game of throne blah bombibi', '2021-01-08 14:45:00', 2);

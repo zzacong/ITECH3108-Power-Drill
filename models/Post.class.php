@@ -73,7 +73,7 @@ class Post {
   }
 
   private function makeUnLikeUrl() {
-    return $this->makeUrl() . $this->id . '/like';
+    return $this->makeUrl() . $this->id . '/unlike';
   }
 }
 

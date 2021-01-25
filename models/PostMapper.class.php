@@ -24,9 +24,7 @@ class PostMapper {
 
   function execute(): PDOStatement {
     $this->stmt = $this->conn->prepare($this->query);
-    // echo json_encode($this->query) . PHP_EOL;
     if ($this->bindings) {
-      // echo json_encode(implode(', ', $this->bindings)) . PHP_EOL;
       foreach ($this->bindings as $i => $value) {
         $this->stmt->bindValue($i + 1, $value);
       }

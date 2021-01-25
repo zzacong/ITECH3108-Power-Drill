@@ -9,10 +9,6 @@ spl_autoload_register(function ($className) {
 
 header('Content-Type: application/json; charset=utf-8');
 
-// echo $_SERVER['REQUEST_URI'] . PHP_EOL;
-// echo json_encode($_SERVER['PATH_INFO']) . PHP_EOL;
-// echo $_SERVER['QUERY_STRING'] . PHP_EOL;
-
 $router = new Router();
 
 
@@ -37,38 +33,6 @@ $router->get('#^/(\d+)/?$#', function ($params) {
     }
     // No post with this ID
     not_found(null);
-  } catch (Exception $e) {
-    handle_error($e);
-  }
-});
-
-
-// ! GET /posts/toplevel/
-$router->get('#^/toplevel/?$#', function () {
-  $db = new Database();
-  $post_mapper = new PostMapper($db->getConnection());
-
-  try {
-    $post_mapper
-      ->selectAll()
-      ->whereNull('reply_to');
-
-    extract_query_params($_GET, $post_mapper, true);
-    sortable($_GET, $post_mapper);
-
-    $stmt = $post_mapper->execute();
-
-    $posts = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $post = new Post($row, $post_mapper);
-      $posts[] = $post->__serialize();
-    }
-
-    if ($posts)
-      success_ok($posts);
-    else
-      not_found([]); // No top-level posts
-
   } catch (Exception $e) {
     handle_error($e);
   }

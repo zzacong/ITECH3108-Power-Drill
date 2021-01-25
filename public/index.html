@@ -39,7 +39,7 @@
   </div>
 
   <div class="container-fluid">
-    <div class="d-flex flex-column flex-md-row">
+    <div class="d-flex flex-column flex-md-row justify-content-md-center">
 
       <section id="sidebar" class="px-3 mb-4">
         <h5 class="mt-2 mb-4">Top-Level Posts</h5>
@@ -56,9 +56,9 @@
         <hr class="mt-4">
       </section>
 
-      <main id="main" class="flex-grow-1 d-none px-4">
+      <main class="flex-grow-1 px-4">
 
-        <article id="postDetail" class="mb-4 post">
+        <article id="postDetail" class="mb-4 d-none post">
           <h2 class="mb-3">Post Details</h2>
           <div class="row">
             <div class="col-12 col-sm">
@@ -85,7 +85,7 @@
           <hr class="mt-4">
         </article>
 
-        <section class="mb-5">
+        <section id="repliesSection" class="d-none mb-5">
           <h4>Replies</h4>
           <ul id="replyList" class="list-group"></ul>
           <li id="replyItemTemplate" class="list-group-item d-none">
