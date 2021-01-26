@@ -5,3 +5,19 @@
 main {
   max-width: 1000px;
 }
+
+#previousButton {
+  color: rgb(0, 154, 204);
+  border: none;
+  text-align: left;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+#previousButton:hover {
+  cursor: pointer;
+}
+
+#previousButton.hide {
+  display: none !important;
+}

@@ -14,11 +14,7 @@ class Database {
       $this->conn = new PDO(self::DB_DSN, self::DB_USER, self::DB_PASSWD);
       $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-      http_response_code(500);
-      header('Content-Type: application/json; charset=utf-8');
-      $res = ['error' => 'Connection failed: ' . $e->getMessage()];
-      echo json_encode($res, JSON_PRETTY_PRINT);
-      exit();
+      handle_error($e);
     }
   }
 

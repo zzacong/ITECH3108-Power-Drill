@@ -18,9 +18,9 @@ class Handler {
   public function handle($url) {
     if ($this->method === $_SERVER['REQUEST_METHOD'] && preg_match($this->regex, $url, $params)) {
       ($this->func)($params);
-      return TRUE;
+      return true;
     }
-    return FALSE;
+    return false;
   }
 }
 

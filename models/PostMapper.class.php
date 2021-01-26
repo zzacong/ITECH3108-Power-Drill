@@ -10,6 +10,8 @@ class PostMapper {
   private $query = "";
   private $bindings = array();
   private $stmt;
+  private $andWhere = false;
+  private $andOrder = false;
 
 
   function __construct(PDO $conn) {
@@ -17,8 +19,16 @@ class PostMapper {
   }
 
 
-  function valid_key($key) {
+  private function valid_key($key) {
     return in_array($key, self::FIELDS);
+  }
+
+
+  private function reset() {
+    $this->query = '';
+    $this->bindings = array();
+    $this->andWhere = false;
+    $this->andOrder = false;
   }
 
 
@@ -34,8 +44,8 @@ class PostMapper {
   }
 
 
-  function selectAll(): PostMapper {
-    $this->bindings = array();
+  function selectAll(): self {
+    $this->reset();
     $this->query = "
         SELECT * FROM $this->table
       ";
@@ -43,8 +53,8 @@ class PostMapper {
   }
 
 
-  function select(...$args): PostMapper {
-    $this->bindings = array();
+  function select(...$args): self {
+    $this->reset();
     if (!array_diff($args, self::FIELDS)) {
       $fields = implode(', ', $args);
       $this->query = "
@@ -58,13 +68,12 @@ class PostMapper {
   }
 
 
-  function where($key, $value, $and = false): PostMapper {
+  function where($key, $value): self {
     if ($this->valid_key($key)) {
       $this->bindings[] = $value;
-      $this->query .= $and ? 'AND' : 'WHERE';
-      $this->query .= "
-          ($key = ?)
-        ";
+      $this->query .= $this->andWhere ? ' AND ' : ' WHERE ';
+      $this->query .= "($key = ?)";
+      $this->andWhere = true;
       return $this;
     } else {
       throw new Exception("Error processing where.");
@@ -72,12 +81,11 @@ class PostMapper {
   }
 
 
-  function whereNull($key, $and = false): PostMapper {
+  function whereNull($key): self {
     if ($this->valid_key($key)) {
-      $this->query .= $and ? " AND " : " WHERE ";
-      $this->query .= "
-        ($key IS NULL)
-      ";
+      $this->query .= $this->andWhere ? ' AND ' : ' WHERE ';
+      $this->query .= "($key IS NULL)";
+      $this->andWhere = true;
       return $this;
     } else {
       throw new Exception("Error processing whereNull.");
@@ -85,12 +93,11 @@ class PostMapper {
   }
 
 
-  function orderBy($key, $order, $and = false): PostMapper {
+  function orderBy($key, $order): self {
     if ($this->valid_key($key) && in_array(strtolower($order), ['asc', 'desc'])) {
-      $this->query .= $and ? ", " : " ORDER BY ";
-      $this->query .= "
-        $key $order
-      ";
+      $this->query .= $this->andOrder ? ' , ' : ' ORDER BY ';
+      $this->query .= "$key $order";
+      $this->andOrder = true;
       return $this;
     } else {
       throw new Exception("Error ordering rows.");
@@ -98,8 +105,8 @@ class PostMapper {
   }
 
 
-  function insert($args): PostMapper {
-    $this->bindings = array();
+  function insert($args): self {
+    $this->reset();
     $keys = array_keys($args);
     $values = array_values($args);
 
@@ -122,8 +129,8 @@ class PostMapper {
   }
 
 
-  public function update($args): PostMapper {
-    $this->bindings = array();
+  public function update($args): self {
+    $this->reset();
     $this->query = "
       UPDATE $this->table
       SET

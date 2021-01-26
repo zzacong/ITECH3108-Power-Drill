@@ -13,6 +13,7 @@ $router = new Router();
 
 
 // ! GET /posts/:id
+// ! GET one post with associated replies
 $router->get('#^/(\d+)/?$#', function ($params) {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
@@ -23,13 +24,15 @@ $router->get('#^/(\d+)/?$#', function ($params) {
       ->selectAll()
       ->where('id', $id);
 
-    extract_query_params($_GET, $post_mapper, true);
+    extract_query_params($_GET, $post_mapper);
 
     $stmt = $post_mapper->execute();
 
     if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $post = new Post($row, $post_mapper);
-      success_ok($post->__serialize());
+      $post = (new Post($row))->setMapper($post_mapper);
+      $single_post = $post->__serialize();
+      $single_post['replies'] = $post->getReplies();
+      success_ok($single_post);
     }
     // No post with this ID
     not_found(null);
@@ -39,7 +42,8 @@ $router->get('#^/(\d+)/?$#', function ($params) {
 });
 
 
-// ! GET /posts/
+// ! GET /posts
+// ! GET array of posts with associated replies
 $router->get('#^/$#', function () {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
@@ -54,22 +58,68 @@ $router->get('#^/$#', function () {
 
     $posts = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $post = new Post($row, $post_mapper);
+      $post = new Post($row);
       $posts[] = $post->__serialize();
     }
 
-    if ($posts)
-      success_ok($posts);
-    else
+    if ($posts) {
+      $res = [
+        'data' => $posts,
+        'links' => [
+          'self' => Post::BASE_URI,
+          'create' => Post::BASE_URI
+        ]
+      ];
+      success_ok($res);
+    } else {
       not_found([]); // The database has no posts
-
+    }
   } catch (Exception $e) {
     handle_error($e);
   }
 });
 
 
-// ! POST /posts/
+// ! POST /posts/:id
+// ! Create a reply
+$router->post('#^/(\d+)/?$#', function ($params) {
+  $db = new Database();
+  $post_mapper = new PostMapper($db->getConnection());
+
+  $req_body = json_decode(file_get_contents("php://input"), true);
+  $post = [
+    'text' => $req_body['text'] ?? null,
+    'name' => $req_body['name'] ?? '',
+    'reply_to' => $params[1],
+  ];
+
+  try {
+    if (!$post['text'])
+      throw new Exception('No text is given');
+
+    $stmt = $post_mapper
+      ->insert($post)
+      ->execute();
+
+    $lastId = $db->getConnection()->lastInsertId();
+    $stmt = $post_mapper
+      ->selectAll()
+      ->where('id', $lastId)
+      ->execute();
+
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $post = new Post($row);
+      success_ok($post->__serialize());
+    }
+    not_found([], true);
+  } catch (Exception $e) {
+    handle_error($e);
+  }
+});
+
+
+// ! POST /posts
+// ! Create a post
 $router->post('#^/$#', function () {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
@@ -77,7 +127,7 @@ $router->post('#^/$#', function () {
   $req_body = json_decode(file_get_contents("php://input"), true);
   $post = [
     'text' => $req_body['text'] ?? null,
-    'name' => $req_body['name'] ?? 'anonymous' ? $req_body['name'] : 'anonymous',
+    'name' => $req_body['name'] ?? '',
   ];
 
   if (isset($req_body['replyTo']))
@@ -98,7 +148,7 @@ $router->post('#^/$#', function () {
       ->execute();
 
     if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $post = new Post($row, $post_mapper);
+      $post = new Post($row);
       success_ok($post->__serialize());
     }
     not_found([], true);
@@ -108,8 +158,9 @@ $router->post('#^/$#', function () {
 });
 
 
-// ! PUT /posts/:id/like
-$router->put('#^/(\d+)/like/?$#', function ($params) {
+// ! POST /posts/:id/like
+// ! Like a post
+$router->post('#^/(\d+)/like/?$#', function ($params) {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
 
@@ -135,7 +186,7 @@ $router->put('#^/(\d+)/like/?$#', function ($params) {
         ->execute();
 
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      $post = new Post($row, $post_mapper);
+      $post = new Post($row);
       success_ok($post->__serialize());
     }
     not_found(null);
@@ -145,8 +196,9 @@ $router->put('#^/(\d+)/like/?$#', function ($params) {
 });
 
 
-// ! PUT /posts/:id/unlike
-$router->put('#^/(\d+)/unlike/?$#', function ($params) {
+// ! POST /posts/:id/unlike
+// ! Unlike a post
+$router->post('#^/(\d+)/unlike/?$#', function ($params) {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
 
@@ -172,7 +224,7 @@ $router->put('#^/(\d+)/unlike/?$#', function ($params) {
         ->execute();
 
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      $post = new Post($row, $post_mapper);
+      $post = new Post($row);
       success_ok($post->__serialize());
     }
     not_found(null);
@@ -184,8 +236,9 @@ $router->put('#^/(\d+)/unlike/?$#', function ($params) {
 
 // ! Try routing
 $router->route($_SERVER['PATH_INFO']);
-// No route matches, route is invalid
-not_found([], true);
+
+// ! No matched route found, return a 404 Not Found respond
+not_found(null);
 
 
 ?>
