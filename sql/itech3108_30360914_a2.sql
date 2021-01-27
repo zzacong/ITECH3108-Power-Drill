@@ -29,7 +29,7 @@ DROP TABLE IF EXISTS `PowerDrillPost`;
 -- Create Tables
 CREATE TABLE `PowerDrillPost` (
   `id` SERIAL,
-  `name` VARCHAR(255) DEFAULT '',
+  `name` VARCHAR(255) NOT NULL DEFAULT '',
   `text` TEXT NOT NULL,
   `post_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `likes` INT DEFAULT 0,

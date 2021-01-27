@@ -7,7 +7,13 @@ function camel_to_snake($str) {
 
 function success_ok($res) {
   http_response_code(200);
-  echo json_encode($res);
+  echo json_encode($res, JSON_UNESCAPED_SLASHES);
+  exit();
+}
+
+function success_created($res) {
+  http_response_code(201);
+  echo json_encode($res, JSON_UNESCAPED_SLASHES);
   exit();
 }
 

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "text": "my first cake",
+    "likes": "2",
+    "postDate": "2021-01-05 20:00:00",
+    "replyTo": null
+  },
+  {
+    "id": "2",
+    "name": "Patrick Howard",
+    "text": "hello world",
+    "likes": "3",
+    "postDate": "2021-01-06 13:00:00",
+    "replyTo": null
+  },
+  {
+    "id": "3",
+    "name": "user30360914",
+    "text": "why you should sleep",
+    "likes": "10",
+    "postDate": "2021-01-06 15:00:00",
+    "replyTo": null
+  },
+  {
+    "id": "4",
+    "name": "",
+    "text": "Some birds fly over the sky",
+    "likes": "2",
+    "postDate": "2021-01-07 18:25:00",
+    "replyTo": null
+  },
+  {
+    "id": "5",
+    "name": "",
+    "text": "donut car bombibi",
+    "likes": "0",
+    "postDate": "2021-01-08 10:20:00",
+    "replyTo": "1"
+  },
+  {
+    "id": "6",
+    "name": "",
+    "text": "the superman return bombibi",
+    "likes": "0",
+    "postDate": "2021-01-08 10:25:00",
+    "replyTo": "2"
+  },
+  {
+    "id": "7",
+    "name": "Farrington Durham",
+    "text": "pizza hawaiian bombibi",
+    "likes": "0",
+    "postDate": "2021-01-08 13:20:00",
+    "replyTo": "1"
+  },
+  {
+    "id": "8",
+    "name": "user30360914",
+    "text": "game of throne blah bombibi",
+    "likes": "0",
+    "postDate": "2021-01-08 14:45:00",
+    "replyTo": "2"
+  }
+]

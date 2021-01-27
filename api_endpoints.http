@@ -1,0 +1,66 @@
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts?id=1 HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts?replyTo=null HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts?name=John%20Doe HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts?likes=0 HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts?sort=postDate:asc,likes:desc HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts/1 HTTP/1.1
+
+###
+
+GET   http://localhost:8080/powerdrill/api/posts/1/replies HTTP/1.1
+
+###
+
+POST  http://localhost:8080/powerdrill/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample",
+    "text": "hello world"
+}
+
+###
+
+POST  http://localhost:8080/powerdrill/api/posts/1 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample",
+    "text": "hello world"
+}
+
+###
+
+POST  http://localhost:8080/powerdrill/api/posts/1/like HTTP/1.1
+
+###
+
+POST  http://localhost:8080/powerdrill/api/posts/1/unlike HTTP/1.1
+
+###
+
+GET http://localhost:8080/powerdrill/api/tests HTTP/1.1
+
+###

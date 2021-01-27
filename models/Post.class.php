@@ -34,6 +34,12 @@ class Post {
   }
 
 
+  function setId(int $id): self {
+    $this->id = $id;
+    return $this;
+  }
+
+
   function __serialize(): array {
     $arr = [
       'id' => $this->id,
@@ -43,18 +49,19 @@ class Post {
       'postDate' => $this->postDate,
       'replyTo' => $this->replyTo,
       'links' => [
-        'self' => $this->makePostUrl(),
-        'reply' => $this->makePostUrl(),
+        'self' => $this->makePostUri(),
+        'reply' => $this->makePostUri(),
+        'replies' => $this->makeRepliesUri(),
         'collection' => self::BASE_URI,
-        'like' => $this->makeLikeUrl(),
-        'unlike' => $this->makeUnLikeUrl(),
+        'like' => $this->makeLikeUri(),
+        'unlike' => $this->makeUnLikeUri(),
       ],
     ];
 
     if ($this->replyTo) {
       $post = new self();
       $post->id = $this->replyTo;
-      $arr['links']['parent'] = $post->makePostUrl();
+      $arr['links']['parent'] = $post->makePostUri();
     }
 
     return $arr;
@@ -74,16 +81,21 @@ class Post {
   }
 
 
-  private function makePostUrl() {
+  function makePostUri() {
     return self::BASE_URI . "/$this->id";
   }
 
 
-  private function makeLikeUrl() {
+  function makeRepliesUri() {
+    return self::BASE_URI . "/$this->id/replies";
+  }
+
+
+  function makeLikeUri() {
     return self::BASE_URI . "/$this->id/like";
   }
 
-  private function makeUnLikeUrl() {
+  function makeUnLikeUri() {
     return self::BASE_URI . "/$this->id/unlike";
   }
 }

@@ -42,6 +42,56 @@ $router->get('#^/(\d+)/?$#', function ($params) {
 });
 
 
+// ! GET /posts/:id/replies
+// ! GET an array of replies of one post
+$router->get('#^/(\d+)/replies/?$#', function ($params) {
+  $db = new Database();
+  $post_mapper = new PostMapper($db->getConnection());
+  $id = $params[1];
+
+  try {
+    $stmt = $post_mapper
+      ->select('id')
+      ->where('id', $id)
+      ->execute();
+
+    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+      $post_mapper
+        ->selectAll()
+        ->where('reply_to', $id);
+
+      extract_query_params($_GET, $post_mapper);
+      sortable($_GET, $post_mapper);
+
+      $stmt = $post_mapper->execute();
+
+      $posts = array();
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $post = new Post($row);
+        $single_post = $post->__serialize();
+        $posts[] = $single_post;
+      }
+
+      $post = (new Post())->setId($id);
+      $res = [
+        'data' => $posts,
+        'links' => [
+          'self' => $post->makeRepliesUri(),
+          'create' => $post->makePostUri(),
+          'parent' => $post->makePostUri(),
+        ]
+      ];
+      success_ok($res);
+    } else {
+      // The post has no replies
+      not_found(null);
+    }
+  } catch (Exception $e) {
+    handle_error($e);
+  }
+});
+
+
 // ! GET /posts
 // ! GET array of posts with associated replies
 $router->get('#^/$#', function () {
@@ -62,18 +112,15 @@ $router->get('#^/$#', function () {
       $posts[] = $post->__serialize();
     }
 
-    if ($posts) {
-      $res = [
-        'data' => $posts,
-        'links' => [
-          'self' => Post::BASE_URI,
-          'create' => Post::BASE_URI
-        ]
-      ];
-      success_ok($res);
-    } else {
-      not_found([]); // The database has no posts
-    }
+    $res = [
+      'data' => $posts,
+      'links' => [
+        'self' => Post::BASE_URI,
+        'create' => Post::BASE_URI
+      ]
+    ];
+
+    success_ok($res);
   } catch (Exception $e) {
     handle_error($e);
   }
@@ -81,7 +128,7 @@ $router->get('#^/$#', function () {
 
 
 // ! POST /posts/:id
-// ! Create a reply
+// ! Create a reply to a post
 $router->post('#^/(\d+)/?$#', function ($params) {
   $db = new Database();
   $post_mapper = new PostMapper($db->getConnection());
@@ -109,7 +156,7 @@ $router->post('#^/(\d+)/?$#', function ($params) {
 
     if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $post = new Post($row);
-      success_ok($post->__serialize());
+      success_created($post->__serialize());
     }
     not_found([], true);
   } catch (Exception $e) {
@@ -149,7 +196,7 @@ $router->post('#^/$#', function () {
 
     if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $post = new Post($row);
-      success_ok($post->__serialize());
+      success_created($post->__serialize());
     }
     not_found([], true);
   } catch (Exception $e) {
