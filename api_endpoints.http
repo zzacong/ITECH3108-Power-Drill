@@ -37,8 +37,8 @@ POST  http://localhost:8080/powerdrill/api/posts HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sample",
-    "text": "hello world"
+    "name": "Ellen Kelly",
+    "text": "arrangement shout although car frame tea then dry path band seen probably them stuck with crew leaving breath satisfied improve quarter desk outer master"
 }
 
 ###
@@ -47,8 +47,8 @@ POST  http://localhost:8080/powerdrill/api/posts/1 HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sample",
-    "text": "hello world"
+    "name": "Noah McGee",
+    "text": "add community memory lower sharp seat medicine inch list cloud tightly seems bat cell horse result smoke declared rocky while morning nearly pile given"
 }
 
 ###

@@ -135,8 +135,8 @@ $router->post('#^/(\d+)/?$#', function ($params) {
 
   $req_body = json_decode(file_get_contents("php://input"), true);
   $post = [
-    'text' => $req_body['text'] ?? null,
-    'name' => $req_body['name'] ?? '',
+    'text' => trim($req_body['text'] ?? null),
+    'name' => trim($req_body['name'] ?? ''),
     'reply_to' => $params[1],
   ];
 
@@ -173,8 +173,8 @@ $router->post('#^/$#', function () {
 
   $req_body = json_decode(file_get_contents("php://input"), true);
   $post = [
-    'text' => $req_body['text'] ?? null,
-    'name' => $req_body['name'] ?? '',
+    'text' => trim($req_body['text'] ?? null),
+    'name' => trim($req_body['name'] ?? ''),
   ];
 
   if (isset($req_body['replyTo']))
