@@ -4,7 +4,6 @@
 -- 30360914
 -- 
 
-
 -- 
 -- 
 -- Drop Database if exists
@@ -16,6 +15,13 @@ DROP DATABASE IF EXISTS `itech3108_30360914_a2`;
 -- Create Database
 CREATE DATABASE `itech3108_30360914_a2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `itech3108_30360914_a2`;
+
+
+-- 
+-- 
+-- Create MySQL user for this application
+CREATE USER 'powerdrill'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON `itech3108_30360914_a2`.* TO 'powerdrill'@'localhost';
 
 
 -- 
@@ -41,7 +47,7 @@ CREATE TABLE `PowerDrillPost` (
 
 -- 
 -- 
--- INSERT ROW
+-- INSERT ROWS
 
 -- 
 -- PowerDrillPost Table
