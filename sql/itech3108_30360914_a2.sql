@@ -57,29 +57,29 @@ CREATE TABLE `PowerDrillPost` (
 INSERT INTO `PowerDrillPost` 
   (`name`, `text`, `post_date`, `likes`)
 VALUES 
-  ('John Doe', 'my first cake', '2021-01-05 20:00:00', 2),
-  ('Patrick Howard', 'hello world', '2021-01-06 13:00:00', 3),
-  ('user30360914', 'why you should sleep', '2021-01-06 15:00:00', 10);
+  ('John Doe', 'My old power drill just died yesterday. Looking for a new cordless drill. Anyone has any recommendation?', '2021-01-05 20:00:00', 6),
+  ('Patrick Howard', "Been using the Grapevine EWT997 20V XR brushless hammer drill driver. It's the best I've used so far.", '2021-01-06 13:00:00', 11),
+  ('user30360914', "What's the difference between an impact drill and hammer drill?", '2021-01-06 15:00:00', 20);
 
 -- Anonymous
 INSERT INTO `PowerDrillPost` 
   (`text`, `post_date`)
 VALUES 
-  ('Some birds fly over the sky', '2021-01-07 18:25:00');
+  ('Is the R8112 Hammer Drill from Grapevine a right choice?', '2021-01-07 18:25:00');
 
 
 -- 
 -- REPLIES
 -- Anonymous
 INSERT INTO `PowerDrillPost` 
-  (`text`, `post_date`, `reply_to`)
+  (`text`, `post_date`, `likes`, `reply_to`)
 VALUES
-  ('donut car bombibi', '2021-01-08 10:20:00', 1),
-  ('the superman return bombibi', '2021-01-08 10:25:00', 2);
+  ("If you're on a budget. The BP100 from Grapevine is an excellent choice. It has 3 hours battery, 20V and four-speed drill.", '2021-01-08 10:20:00', 7, 1),
+  ('This is hands down the best cordless drill you can find on the market right now.', '2021-01-08 10:25:00', 4, 2);
 
 -- Name
 INSERT INTO `PowerDrillPost`
-  (`name`, `text`, `post_date`, `reply_to`)
+  (`name`, `text`, `post_date`, `likes`, `reply_to`)
 VALUES
-  ('Farrington Durham', 'pizza hawaiian bombibi', '2021-01-08 13:20:00', 1),
-  ('user30360914', 'game of throne blah bombibi', '2021-01-08 14:45:00', 2);
+  ('Farrington Durham', 'Affordable best 18V cordless drill presents an outstanding value at just $139. Check it out.', '2021-01-08 13:20:00', 6, 1),
+  ('user30360914', "I've been using the older version EWT887 and it's still working fine.", '2021-01-08 14:45:00', 18, 2);
