@@ -63,7 +63,7 @@ class PostMapper {
       ";
       return $this;
     } else {
-      throw new Exception("Error Processing Request");
+      throw new Exception("Invalid field in SELECT clause.", 1);
     }
   }
 
@@ -76,7 +76,7 @@ class PostMapper {
       $this->andWhere = true;
       return $this;
     } else {
-      throw new Exception("Error processing where.");
+      throw new Exception("Invalid key in WHERE clause.", 1);
     }
   }
 
@@ -88,7 +88,7 @@ class PostMapper {
       $this->andWhere = true;
       return $this;
     } else {
-      throw new Exception("Error processing whereNull.");
+      throw new Exception("Invalid key in WHERE clause.", 1);
     }
   }
 
@@ -100,7 +100,7 @@ class PostMapper {
       $this->andOrder = true;
       return $this;
     } else {
-      throw new Exception("Error ordering rows.");
+      throw new Exception("Invalid key in ORDER BY clause.", 1);
     }
   }
 
@@ -124,7 +124,7 @@ class PostMapper {
       ";
       return $this;
     } else {
-      throw new Exception("Error inserting row.");
+      throw new Exception("Invalid field in INSERT clause.", 1);
     }
   }
 
@@ -143,7 +143,7 @@ class PostMapper {
         $this->query = rtrim($this->query, ', ');
         return $this;
       } else {
-        throw new Exception("Error updating row.");
+        throw new Exception("Invalid key in UPDATE clause.", 1);
       }
     }
   }

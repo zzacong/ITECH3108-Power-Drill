@@ -42,11 +42,10 @@ function handle_error(Exception $e) {
   $msg = [
     'error' => $e->getMessage(),
     'code' => $e->getCode(),
-    'trace' => $e->getTraceAsString()
   ];
 
-  if ($e->getCode() === '42000')
-    // SQL Syntax Error
+  if (str_contains($e->getMessage(), 'SQLSTATE') || $e->getCode() === 1)
+    // SQL Error
     server_error($msg);
   else
     // 400 Bad Request
