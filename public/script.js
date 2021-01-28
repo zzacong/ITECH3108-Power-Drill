@@ -56,6 +56,8 @@ createPostForm.addEventListener('submit', async e => {
 // !! --- --- ---
 // ?? --- --- ---
 
+// *
+// * Initial method. Only run once on first load / refresh
 async function init() {
   topLevelPostList.innerHTML = ''
   const { data, links } = await useFetch(TOP_LEVEL_URI)
@@ -65,7 +67,7 @@ async function init() {
     addPostDOM(post)
   })
 
-  // Show the latest top-level post
+  // Show the latest top-level post on first load
   document.querySelector('.top-level-post').classList.add('active')
   showPost(topLevelPosts[0].links.self)
 }
@@ -75,6 +77,8 @@ init().catch(console.log)
 // !! --- --- ---
 // ?? --- --- ---
 
+// *
+// * Called whenever a new top-level post needs to be added to DOM
 function addPostDOM(post, prepend = false) {
   const postItem = document
     .querySelector('#topLevelPostTemplate')
@@ -100,6 +104,9 @@ function addPostDOM(post, prepend = false) {
   return postItem
 }
 
+// *
+// * Called whenever a post is selected
+// * Fetch the details and replies of the post
 async function showPost(links) {
   const post = await useFetch(links)
   currPost = post
@@ -114,6 +121,8 @@ async function showPost(links) {
   replyForm.reset()
 }
 
+// *
+// * Handle re-rendering of the details of the current selected post to the DOM
 function fillPostDetails({ id, name, postDate, likes, text, replyTo }) {
   currPostId.textContent = id
   currPostDate.textContent = postDate
@@ -128,6 +137,8 @@ function fillPostDetails({ id, name, postDate, likes, text, replyTo }) {
   else btnPrevious.classList.add('hide')
 }
 
+// *
+// * Called whenever a new reply needs to be added to the DOM
 function addReplyDOM({ id, name, postDate, likes, text, links, replyTo }) {
   const replyItem = document.querySelector('#replyItemTemplate').cloneNode(true)
   replyItem.classList.remove('d-none')
@@ -161,26 +172,6 @@ function addReplyDOM({ id, name, postDate, likes, text, links, replyTo }) {
   btnView.addEventListener('click', async () => {
     showPost(links.self)
   })
-}
-
-// !! --- --- ---
-// ?? --- --- ---
-
-async function useFetch(endpoint) {
-  const res = await fetch(BASE_URL + endpoint)
-  return res.json()
-}
-
-async function usePost(endpoint, data = null) {
-  const options = {
-    method: 'POST',
-  }
-  if (data) {
-    options.headers = { 'Content-Type': 'application/json' }
-    options.body = JSON.stringify(data)
-  }
-  const res = await fetch(BASE_URL + endpoint, options)
-  return res.json()
 }
 
 // !! --- --- ---
@@ -259,3 +250,23 @@ setInterval(async () => {
 
   topLevelPosts = data
 }, 5000)
+
+// !! --- --- ---
+// ?? --- --- ---
+
+async function useFetch(endpoint) {
+  const res = await fetch(BASE_URL + endpoint)
+  return res.json()
+}
+
+async function usePost(endpoint, data = null) {
+  const options = {
+    method: 'POST',
+  }
+  if (data) {
+    options.headers = { 'Content-Type': 'application/json' }
+    options.body = JSON.stringify(data)
+  }
+  const res = await fetch(BASE_URL + endpoint, options)
+  return res.json()
+}
