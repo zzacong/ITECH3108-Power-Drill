@@ -1,4 +1,4 @@
-const BASE_URL = '/powerdrill'
+const BASE_URL = window.location.pathname + '..'
 const TOP_LEVEL_URI = '/api/posts?replyTo=null&sort=postDate:desc'
 
 const createPostButton = document.querySelector('#createPostButton')
@@ -201,6 +201,7 @@ replyForm.addEventListener('submit', async e => {
     })
     if (error) {
       replyForm.text.classList.add('border-danger')
+      console.log(error)
       replyForm.text.placeholder = error
     } else {
       replyForm.text.classList.remove('border-danger')
