@@ -19,6 +19,12 @@ USE `itech3108_30360914_a2`;
 
 -- 
 -- 
+-- Drop MySQL user if exists
+DROP USER IF EXISTS 'powerdrill'@'localhost';
+
+
+-- 
+-- 
 -- Create MySQL user for this application
 CREATE USER 'powerdrill'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON `itech3108_30360914_a2`.* TO 'powerdrill'@'localhost';

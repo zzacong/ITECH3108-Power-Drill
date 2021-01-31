@@ -4,63 +4,63 @@
     "name": "John Doe",
     "text": "My old power drill just died yesterday. Looking for a new cordless drill. Anyone has any recommendation?",
     "likes": 6,
-    "postDate": "2021-01-05 20:00:00",
-    "replyTo": null
+    "post_date": "2021-01-05 20:00:00",
+    "reply_to": null
   },
   {
     "id": "2",
     "name": "Patrick Howard",
     "text": "Been using the Grapevine EWT997 20V XR brushless hammer drill driver. It's the best I've used so far.",
     "likes": 11,
-    "postDate": "2021-01-06 13:00:00",
-    "replyTo": null
+    "post_date": "2021-01-06 13:00:00",
+    "reply_to": null
   },
   {
     "id": "3",
     "name": "user30360914",
     "text": "What's the difference between an impact drill and hammer drill?",
     "likes": 20,
-    "postDate": "2021-01-06 15:00:00",
-    "replyTo": null
+    "post_date": "2021-01-06 15:00:00",
+    "reply_to": null
   },
   {
     "id": "4",
     "name": "",
     "text": "Is the R8112 Hammer Drill from Grapevine a right choice?",
     "likes": 0,
-    "postDate": "2021-01-07 18:25:00",
-    "replyTo": null
+    "post_date": "2021-01-07 18:25:00",
+    "reply_to": null
   },
   {
     "id": "5",
     "name": "",
     "text": "If you're on a budget. The BP100 from Grapevine is an excellent choice. It has 3 hours battery, 20V and four-speed drill.",
     "likes": 7,
-    "postDate": "2021-01-08 10:20:00",
-    "replyTo": 1
+    "post_date": "2021-01-08 10:20:00",
+    "reply_to": 1
   },
   {
     "id": "6",
     "name": "",
     "text": "This is hands down the best cordless drill you can find on the market right now.",
     "likes": 4,
-    "postDate": "2021-01-08 10:25:00",
-    "replyTo": 2
+    "post_date": "2021-01-08 10:25:00",
+    "reply_to": 2
   },
   {
     "id": "7",
     "name": "Farrington Durham",
     "text": "Affordable best 18V cordless drill presents an outstanding value at just $139. Check it out.",
     "likes": 6,
-    "postDate": "2021-01-08 13:20:00",
-    "replyTo": 1
+    "post_date": "2021-01-08 13:20:00",
+    "reply_to": 1
   },
   {
     "id": "8",
     "name": "user30360914",
     "text": "I've been using the older version EWT887 and it's still working fine.",
     "likes": 18,
-    "postDate": "2021-01-08 14:45:00",
-    "replyTo": 2
+    "post_date": "2021-01-08 14:45:00",
+    "reply_to": 2
   }
 ]
